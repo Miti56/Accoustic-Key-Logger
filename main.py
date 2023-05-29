@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
+from PyQt6.QtGui import QColor, QKeyEvent
 from PyQt6.QtCore import Qt
 
 
@@ -9,44 +9,87 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Set the window properties
-        self.setWindowTitle("Reactive Keyboard")
+        self.setWindowTitle("Keyboard UI")
         self.setGeometry(100, 100, 800, 400)
 
-        # Create buttons on the side
-        button1 = QPushButton("Button 1", self)
-        button1.setGeometry(20, 20, 120, 40)
+        # Create a layout for the main window
+        main_layout = QVBoxLayout()
+        central_widget = QWidget(self)
+        central_widget.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
 
-        button2 = QPushButton("Button 2", self)
-        button2.setGeometry(20, 80, 120, 40)
+        # Create collapsible buttons on the side
+        self.button1 = QPushButton("Button 1", self)
+        self.button2 = QPushButton("Button 2", self)
+        self.button3 = QPushButton("Button 3", self)
 
-        button3 = QPushButton("Button 3", self)
-        button3.setGeometry(20, 140, 120, 40)
+        self.button1.setCheckable(True)
+        self.button2.setCheckable(True)
+        self.button3.setCheckable(True)
 
-        # Create a label for the keyboard image
-        self.keyboard_label = QLabel(self)
-        self.keyboard_label.setGeometry(200, 20, 400, 300)
-        self.keyboard_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.button1.setChecked(True)  # Set the first button as checked by default
 
-        # Set the initial keyboard image
-        self.update_keyboard_image("initial_image.png")
+        main_layout.addWidget(self.button1)
+        main_layout.addWidget(self.button2)
+        main_layout.addWidget(self.button3)
 
-    def update_keyboard_image(self, image_path):
-        pixmap = QPixmap(image_path)
-        pixmap = pixmap.scaled(400, 300, Qt.AspectRatioMode.KeepAspectRatio)
-        self.keyboard_label.setPixmap(pixmap)
+        # Create a label for the welcome message
+        welcome_label = QLabel("Welcome to the Keyboard UI!", self)
+        welcome_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(welcome_label)
 
-    def keyPressEvent(self, event):
-        key = event.text()
+        # Create a button for the tutorial page
+        tutorial_button = QPushButton("Go to Tutorial", self)
+        tutorial_button.clicked.connect(self.open_tutorial_page)
+        main_layout.addWidget(tutorial_button)
 
-        # Update the keyboard image based on the pressed key
-        if key == 'a':
-            self.update_keyboard_image("keyboard_a.png")
-        elif key == 'b':
-            self.update_keyboard_image("keyboard_b.png")
-        elif key == 'c':
-            self.update_keyboard_image("keyboard_c.png")
-        else:
-            self.update_keyboard_image("keyboard_default.png")
+        # Set up the reactive keyboard
+        self.keyboard_layout = QVBoxLayout()
+        keyboard_widget = QWidget(self)
+        keyboard_widget.setLayout(self.keyboard_layout)
+        main_layout.addWidget(keyboard_widget)
+
+        # Create keys for the keyboard
+        self.keys = []
+        key_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+        for label in key_labels:
+            key_button = QPushButton(label, self)
+            key_button.setFixedWidth(40)
+            key_button.setFixedHeight(40)
+            key_button.clicked.connect(self.key_pressed)
+            self.keys.append(key_button)
+            self.keyboard_layout.addWidget(key_button)
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        key_text = event.text()
+        for key in self.keys:
+            if key.text() == key_text:
+                key.setStyleSheet("background-color: red")
+                break
+
+    def keyReleaseEvent(self, event: QKeyEvent) -> None:
+        key_text = event.text()
+        for key in self.keys:
+            if key.text() == key_text:
+                key.setStyleSheet("background-color: None")
+                break
+
+    def key_pressed(self):
+        sender = self.sender()
+        sender.setStyleSheet("background-color: green")
+
+    def open_tutorial_page(self):
+        tutorial_window = TutorialWindow()
+        tutorial_window.show()
+
+
+class TutorialWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Set the window properties
+        self.setWindowTitle("Tutorial")
+        self.setGeometry(200, 200, 600, 300)
 
 
 if __name__ == "__main__":
