@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QGridLayout
 from PyQt6.QtGui import QColor, QKeyEvent
 from PyQt6.QtCore import Qt, QCoreApplication
 
@@ -44,21 +44,22 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(tutorial_button)
 
         # Set up the reactive keyboard
-        self.keyboard_layout = QVBoxLayout()
+        self.keyboard_layout = QGridLayout()
         keyboard_widget = QWidget(self)
         keyboard_widget.setLayout(self.keyboard_layout)
         main_layout.addWidget(keyboard_widget)
 
         # Create keys for the keyboard
         self.keys = []
-        key_labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
-        for label in key_labels:
+        key_labels = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M']
+        positions = [(i, j) for i in range(4) for j in range(7)]
+        for label, position in zip(key_labels, positions):
             key_button = QPushButton(label, self)
             key_button.setFixedWidth(40)
             key_button.setFixedHeight(40)
             key_button.clicked.connect(self.key_pressed)
             self.keys.append(key_button)
-            self.keyboard_layout.addWidget(key_button)
+            self.keyboard_layout.addWidget(key_button, *position)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         key_text = event.text().upper()
