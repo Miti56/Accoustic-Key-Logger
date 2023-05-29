@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         # Create collapsible buttons on the side
-        self.button1 = QPushButton("Button 1", self)
+        self.button1 = QPushButton("Train Model", self)
         self.button2 = QPushButton("Button 2", self)
         self.button3 = QPushButton("Button 3", self)
 
