@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
 from PyQt6.QtGui import QColor, QKeyEvent
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QCoreApplication
 
 
 class MainWindow(QMainWindow):
@@ -61,17 +61,17 @@ class MainWindow(QMainWindow):
             self.keyboard_layout.addWidget(key_button)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        key_text = event.text()
+        key_text = event.text().upper()
         for key in self.keys:
             if key.text() == key_text:
                 key.setStyleSheet("background-color: red")
                 break
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
-        key_text = event.text()
+        key_text = event.text().upper()
         for key in self.keys:
             if key.text() == key_text:
-                key.setStyleSheet("background-color: None")
+                key.setStyleSheet("")
                 break
 
     def key_pressed(self):
@@ -79,8 +79,9 @@ class MainWindow(QMainWindow):
         sender.setStyleSheet("background-color: green")
 
     def open_tutorial_page(self):
-        tutorial_window = TutorialWindow()
-        tutorial_window.show()
+        self.tutorial_window = TutorialWindow()
+        self.tutorial_window.show()
+        self.hide()
 
 
 class TutorialWindow(QMainWindow):
@@ -90,6 +91,26 @@ class TutorialWindow(QMainWindow):
         # Set the window properties
         self.setWindowTitle("Tutorial")
         self.setGeometry(200, 200, 600, 300)
+
+        # Create a layout for the tutorial window
+        tutorial_layout = QVBoxLayout()
+        central_widget = QWidget(self)
+        central_widget.setLayout(tutorial_layout)
+        self.setCentralWidget(central_widget)
+
+        # Create a label for the tutorial content
+        tutorial_label = QLabel("Tutorial content goes here.", self)
+        tutorial_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        tutorial_layout.addWidget(tutorial_label)
+
+        # Create a button to go back to the main window
+        back_button = QPushButton("Back", self)
+        back_button.clicked.connect(self.go_back)
+        tutorial_layout.addWidget(back_button)
+
+    def go_back(self):
+        self.close()
+        self.parent().show()
 
 
 if __name__ == "__main__":
