@@ -1,42 +1,61 @@
 import sounddevice as sd
-import librosa
+import numpy as np
 import soundfile as sf
+from pynput import keyboard
+from pydub import AudioSegment
+import time
+import os
 
+# List available devices
+devices = sd.query_devices()
+input_devices = [device['name'] for device in devices if device['max_input_channels'] > 0]
 
-def detect_key_press_sound(input_file, output_file, threshold=0.1):
-    # Load the input recording
-    audio, sample_rate = librosa.load(input_file, sr=None)
+print("Available Microphones:")
+for i, device in enumerate(input_devices):
+    print(f"{i+1}. {device}")
 
-    # Detect key press sound
-    key_press_indices = librosa.effects.split(audio, top_db=threshold)
+# Select the device
+device_index = int(input("Enter the number of the microphone you want to use: ")) - 1
 
-    if len(key_press_indices) == 0:
-        print("No key press sound detected.")
-        return
+# Set the recording parameters
+fs = 44100  # Sample rate
+seconds = 60  # Duration of recording
 
-    print(f"Detected {len(key_press_indices)} key press sound(s).")
+print("Press keys during the recording. Press 'esc' to finish recording.")
 
-    # Prepare the new recording
-    new_recording = []
+keypresses = []
+start_time = time.time()
 
-    # Iterate over the key press sound intervals
-    for interval in key_press_indices:
-        start_index, end_index = interval
+def on_press(key):
+    global keypresses
+    global start_time
+    try:
+        print(f'{key} pressed at {time.time()-start_time}')
+        keypresses.append((key.char, time.time() - start_time))
+    except AttributeError:
+        print(f'special key {key} pressed at {time.time()-start_time}')
+        keypresses.append((str(key), time.time() - start_time))
 
-        # Extract the corresponding audio segment
-        segment = audio[start_index:end_index]
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
 
-        # Append the segment to the new recording
-        new_recording.extend(segment)
+myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2, device=input_devices[device_index])
+sd.wait()  # Wait until recording is finished
+sf.write('output.wav', myrecording, fs)  # Save as WAV file
 
-    # Save the new recording to a WAV file
-    sf.write(output_file, new_recording, sample_rate)
+listener.stop()
 
-    print(f"New recording saved to '{output_file}'.")
+print("Creating audio clips...")
 
+song = AudioSegment.from_wav("output.wav")
 
-# Usage example
-input_file = 'recording.wav'
-output_file = 'filtered_recording.wav'
+if not os.path.exists("clips"):
+    os.makedirs("clips")
 
-detect_key_press_sound(input_file, output_file, threshold=0.1)
+for i, (key, press_time) in enumerate(keypresses):
+    start_time = int((press_time - 0.5) * 1000)  # convert to ms
+    end_time = int((press_time + 0.5) * 1000)  # convert to ms
+    clip = song[start_time:end_time]
+    clip.export(f"clips/{key}_{i}.wav", format="wav")
+
+print("Audio clips created!")
