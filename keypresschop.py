@@ -18,8 +18,9 @@ for i, device in enumerate(input_devices):
 device_index = int(input("Enter the number of the microphone you want to use: ")) - 1
 
 # Set the recording parameters
-fs = 44100  # Sample rate
-seconds = 60  # Duration of recording
+fs = 48000  # Sample rate
+seconds = 10  # Duration of recording
+channels = 1 # Number of channels used
 
 print("Press keys during the recording. Press 'esc' to finish recording.")
 
@@ -39,7 +40,7 @@ def on_press(key):
 listener = keyboard.Listener(on_press=on_press)
 listener.start()
 
-myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2, device=input_devices[device_index])
+myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=channels, device=input_devices[device_index])
 sd.wait()  # Wait until recording is finished
 sf.write('output.wav', myrecording, fs)  # Save as WAV file
 
