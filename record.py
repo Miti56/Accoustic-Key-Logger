@@ -17,7 +17,7 @@ def show_available_microphones():
     return selected_microphone
 
 
-def start_recording(sample_rate=44100, duration=5, channels=1):
+def start_recording(sample_rate=44100, duration=10, channels=1):
     selected_microphone = show_available_microphones()
     microphone_index = selected_microphone['index']
     microphone_name = selected_microphone['name']
@@ -36,4 +36,4 @@ def start_recording(sample_rate=44100, duration=5, channels=1):
 
 
 # Usage example
-start_recording(sample_rate=44100, duration=5, channels=1)
+start_recording(sample_rate=44100, duration=10, channels=1)
