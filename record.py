@@ -36,4 +36,4 @@ def start_recording(sample_rate=44100, duration=10, channels=1):
 
 
 # Usage example
-start_recording(sample_rate=44100, duration=10, channels=1)
+start_recording(sample_rate=48000, duration=10, channels=1)

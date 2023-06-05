@@ -42,13 +42,13 @@ listener.start()
 
 myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=channels, device=input_devices[device_index])
 sd.wait()  # Wait until recording is finished
-sf.write('output.wav', myrecording, fs)  # Save as WAV file
+sf.write('recording.wav', myrecording, fs)  # Save as WAV file
 
 listener.stop()
 
 print("Creating audio clips...")
 
-song = AudioSegment.from_wav("output.wav")
+song = AudioSegment.from_wav("recording.wav")
 
 if not os.path.exists("clips"):
     os.makedirs("clips")
