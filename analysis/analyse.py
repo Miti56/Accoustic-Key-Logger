@@ -12,7 +12,7 @@ def analyze_recording(input_file):
     duration = len(audio) / sample_rate
 
     # Perform analysis on the audio data
-    # Here, we'll use autocorrelation to detect repeating patterns
+    # Autocorrelation to detect repeating patterns
     autocorr = correlate(audio, audio)
     autocorr /= np.max(autocorr)  # Normalize the autocorrelation values
 

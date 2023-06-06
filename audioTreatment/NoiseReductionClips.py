@@ -2,7 +2,6 @@ import numpy as np
 import scipy.io.wavfile
 import matplotlib.pyplot as plt
 import noisereduce as nr
-import librosa
 import os
 from scipy.signal import spectrogram
 

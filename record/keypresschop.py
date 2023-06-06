@@ -1,7 +1,5 @@
 import random
-
 import sounddevice as sd
-import numpy as np
 import soundfile as sf
 from pynput import keyboard
 from pydub import AudioSegment
