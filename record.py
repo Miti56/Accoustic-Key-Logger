@@ -17,7 +17,7 @@ def show_available_microphones():
     return selected_microphone
 
 
-def start_recording(sample_rate=44100, duration=10, channels=1):
+def start_recording(sample_rate=48000, duration=20, channels=1):
     selected_microphone = show_available_microphones()
     microphone_index = selected_microphone['index']
     microphone_name = selected_microphone['name']
@@ -29,11 +29,11 @@ def start_recording(sample_rate=44100, duration=10, channels=1):
                        device=microphone_index)
 
     # Save the recording to a WAV file
-    file_path = 'recording.wav'
+    file_path = 'Q.wav'
     sf.write(file_path, recording, sample_rate)
 
     print(f"Recording saved to {file_path}")
 
 
 # Usage example
-start_recording(sample_rate=48000, duration=10, channels=1)
+start_recording(sample_rate=48000, duration=20, channels=1)
