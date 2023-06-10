@@ -5,7 +5,7 @@ from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 
 # Directory containing the audio files
-input_directory = 'clips'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clips'
 
 # List to store the peak times of each file
 peak_times_list = []
