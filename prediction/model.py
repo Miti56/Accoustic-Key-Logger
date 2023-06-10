@@ -49,7 +49,7 @@ model.add(Dense(len(np.unique(labels)), activation='softmax'))  # number of uniq
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Train the model
-model.fit(data_train, labels_train, epochs=50, batch_size=32, validation_data=(data_test, labels_test))
+model.fit(data_train, labels_train, epochs=150, batch_size=32, validation_data=(data_test, labels_test))
 
 # Evaluate the model
 loss, accuracy = model.evaluate(data_test, labels_test)
