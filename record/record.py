@@ -29,7 +29,7 @@ def start_recording(sample_rate=48000, duration=20, channels=1):
                        device=microphone_index)
 
     # Save the recording to a WAV file
-    file_path = 'Q.wav'
+    file_path = 'test.wav'
     sf.write(file_path, recording, sample_rate)
 
     print(f"Recording saved to {file_path}")
