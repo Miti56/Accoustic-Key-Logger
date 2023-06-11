@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import shutil
 
 # Directory containing the audio files
-input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clips'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clips'
 
 # Directory to store the processed files
-output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
+output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clipsCut'
 os.makedirs(output_directory, exist_ok=True)
 
 # List to store the peak times of each file
