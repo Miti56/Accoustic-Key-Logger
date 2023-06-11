@@ -108,9 +108,10 @@ def callback(indata, frames, time, status):
 
 
 # Define the loudness threshold. You may need to adjust this based on your specific situation.
-LOUDNESS_THRESHOLD = 0.01
+LOUDNESS_THRESHOLD = 0.005
 # Listen and predict function
-def listen_and_predict(model, le, device, duration):
+# Listen and predict function
+def listen_and_predict(model, le, device, duration, noise_duration):
     # Check for a valid duration
     if duration <= 0:
         print('Invalid duration. Please enter a positive number.')
@@ -119,6 +120,16 @@ def listen_and_predict(model, le, device, duration):
     # Calculate the number of frames
     frames = int(duration * sample_rate)
 
+    # Background noise reduction
+    # Listen for a few seconds to capture the background noise profile
+    print("Recording background noise profile...")
+    bg_noise = []
+    with sd.InputStream(device=device, channels=1, callback=callback,
+                        blocksize=frames, samplerate=sample_rate):
+        for _ in range(int(noise_duration // duration)):
+            bg_noise.append(q.get().flatten())
+    bg_noise_mean = np.mean(bg_noise)
+
     try:
         with sd.InputStream(device=device, channels=1, callback=callback,
                             blocksize=frames, samplerate=sample_rate):
@@ -126,6 +137,9 @@ def listen_and_predict(model, le, device, duration):
             while True:
                 # Get the next chunk of audio
                 audio_chunk = q.get().flatten()
+
+                # Subtract the mean of the background noise
+                audio_chunk -= bg_noise_mean
 
                 # Check if the loudness exceeds the threshold
                 if np.mean(np.abs(audio_chunk)) > LOUDNESS_THRESHOLD:
@@ -150,6 +164,7 @@ def listen_and_predict(model, le, device, duration):
     except KeyboardInterrupt:
         print('Stopped listening')
 
+
 # Your existing code for loading data, building and training the model
 
 # Print available devices and prompt the user to select one
@@ -162,5 +177,9 @@ selected_device = int(input("Please enter the number of your preferred audio dev
 # Prompt the user for the length of the audio chunks
 duration = float(input("Please enter the duration of the audio chunks in seconds: "))
 
+# Ask the user for how long to record the background noise profile
+noise_duration = float(input("Please enter the duration for recording the background noise profile: "))
+
 # Start the listening and prediction
-listen_and_predict(model, le, selected_device, duration)
+listen_and_predict(model, le, selected_device, duration, noise_duration)
+
