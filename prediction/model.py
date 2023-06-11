@@ -94,3 +94,73 @@ predicted_key = predict_key_press(filename, model, le)
 print(f"The predicted key press for {filename} is {predicted_key}.")
 
 
+
+# Your existing imports here
+import sounddevice as sd
+from queue import Queue
+
+# Set up a queue for the callback function to put audio data into
+q = Queue()
+
+# Callback function to capture audio in chunks
+def callback(indata, frames, time, status):
+    q.put(indata.copy())
+
+
+# Define the loudness threshold. You may need to adjust this based on your specific situation.
+LOUDNESS_THRESHOLD = 0.01
+# Listen and predict function
+def listen_and_predict(model, le, device, duration):
+    # Check for a valid duration
+    if duration <= 0:
+        print('Invalid duration. Please enter a positive number.')
+        return
+
+    # Calculate the number of frames
+    frames = int(duration * sample_rate)
+
+    try:
+        with sd.InputStream(device=device, channels=1, callback=callback,
+                            blocksize=frames, samplerate=sample_rate):
+            print('Listening...')
+            while True:
+                # Get the next chunk of audio
+                audio_chunk = q.get().flatten()
+
+                # Check if the loudness exceeds the threshold
+                if np.mean(np.abs(audio_chunk)) > LOUDNESS_THRESHOLD:
+                    # Convert the audio file into MFCCs
+                    mfccs = librosa.feature.mfcc(y=audio_chunk, sr=sample_rate, n_mfcc=40)
+                    mfccs_processed = np.mean(mfccs.T,axis=0)
+
+                    # Reshape the data for prediction
+                    mfccs_processed = mfccs_processed.reshape(1, -1)
+
+                    # Use the model to predict the label for the new audio file
+                    prediction = model.predict(mfccs_processed)
+
+                    # Get the index of the highest predicted class
+                    predicted_index = np.argmax(prediction[0])
+
+                    # Convert the predicted index to its corresponding label
+                    predicted_label = le.inverse_transform([predicted_index])
+
+                    print(f"The predicted key press is {predicted_label[0]}.")
+
+    except KeyboardInterrupt:
+        print('Stopped listening')
+
+# Your existing code for loading data, building and training the model
+
+# Print available devices and prompt the user to select one
+devices = sd.query_devices()
+print("Available audio devices:")
+for i, device in enumerate(devices):
+    print(f"{i}: {device['name']}")
+selected_device = int(input("Please enter the number of your preferred audio device: "))
+
+# Prompt the user for the length of the audio chunks
+duration = float(input("Please enter the duration of the audio chunks in seconds: "))
+
+# Start the listening and prediction
+listen_and_predict(model, le, selected_device, duration)
