@@ -97,9 +97,12 @@ def callback(indata, frames, time, status):
     q.put(indata.copy())
 
 
-LOUDNESS_THRESHOLD = 0.004
+# Threshold for detecting a key press
+volume_threshold = 0.05  # adjust as needed
 # Listen and predict function
-def listen_and_predict(model, le, device, duration, noise_duration):
+# def listen_and_predict(model, le, device, duration, noise_duration):
+def listen_and_predict(model, le, device, duration):
+
     # Check for a valid duration
     if duration <= 0:
         print('Invalid duration. Please enter a positive number.')
@@ -108,26 +111,27 @@ def listen_and_predict(model, le, device, duration, noise_duration):
     # Calculate the number of frames
     frames = int(duration * sample_rate)
 
-    # Background noise reduction
-    print("Recording background noise profile...")
-    bg_noise = []
-    with sd.InputStream(device=device, channels=1, callback=callback,
-                        blocksize=frames, samplerate=sample_rate):
-        for _ in range(int(noise_duration // duration)):
-            bg_noise.append(q.get().flatten())
-    bg_noise_mean = np.mean(bg_noise)
+    # # Background noise reduction
+    # print("Recording background noise profile...")
+    # bg_noise = []
+    # with sd.InputStream(device=device, channels=1, callback=callback,
+    #                     blocksize=frames, samplerate=48000):
+    #     for _ in range(int(noise_duration // duration)):
+    #         bg_noise.append(q.get().flatten())
+    # bg_noise_mean = np.mean(bg_noise)
 
     try:
         with sd.InputStream(device=device, channels=1, callback=callback,
-                            blocksize=frames, samplerate=sample_rate):
+                            blocksize=frames, samplerate=48000):
             print('Listening...')
             while True:
                 # Get the next chunk of audio
                 audio_chunk = q.get().flatten()
-                # Subtract the mean of the background noise
-                audio_chunk -= bg_noise_mean
-                # Check if the loudness exceeds the threshold
-                if np.mean(np.abs(audio_chunk)) > LOUDNESS_THRESHOLD:
+                # # Subtract the mean of the background noise
+                # audio_chunk -= bg_noise_mean
+                # # Check if the loudness exceeds the threshold
+                volume = np.max(np.abs(audio_chunk))
+                if volume > volume_threshold:
                     # Convert the audio file into MFCCs
                     mfccs = librosa.feature.mfcc(y=audio_chunk, sr=sample_rate, n_mfcc=40)
                     mfccs_processed = np.mean(mfccs.T,axis=0)
@@ -166,9 +170,12 @@ selected_device = int(input("Please enter the number of your preferred audio dev
 # Prompt the user for the length of the audio chunks
 duration = float(input("Please enter the duration of the audio chunks in seconds: "))
 
-# Ask the user for how long to record the background noise profile
-noise_duration = float(input("Please enter the duration for recording the background noise profile: "))
+# # Ask the user for how long to record the background noise profile
+# noise_duration = float(input("Please enter the duration for recording the background noise profile: "))
+
+# # Start the listening and prediction
+# listen_and_predict(model, le, selected_device, duration, noise_duration)
 
 # Start the listening and prediction
-listen_and_predict(model, le, selected_device, duration, noise_duration)
+listen_and_predict(model, le, selected_device, duration)
 
