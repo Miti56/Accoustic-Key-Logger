@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
+import sounddevice as sd
+from queue import Queue
 
 # Directory containing the audio files
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
@@ -85,9 +87,7 @@ def predict_key_press(filename, model, le):
 
     return predicted_label[0]
 
-# Your existing imports here
-import sounddevice as sd
-from queue import Queue
+
 
 # Set up a queue for the callback function to put audio data into
 q = Queue()
@@ -97,9 +97,7 @@ def callback(indata, frames, time, status):
     q.put(indata.copy())
 
 
-# Define the loudness threshold. You may need to adjust this based on your specific situation.
 LOUDNESS_THRESHOLD = 0.004
-# Listen and predict function
 # Listen and predict function
 def listen_and_predict(model, le, device, duration, noise_duration):
     # Check for a valid duration
@@ -111,7 +109,6 @@ def listen_and_predict(model, le, device, duration, noise_duration):
     frames = int(duration * sample_rate)
 
     # Background noise reduction
-    # Listen for a few seconds to capture the background noise profile
     print("Recording background noise profile...")
     bg_noise = []
     with sd.InputStream(device=device, channels=1, callback=callback,
@@ -127,10 +124,8 @@ def listen_and_predict(model, le, device, duration, noise_duration):
             while True:
                 # Get the next chunk of audio
                 audio_chunk = q.get().flatten()
-
                 # Subtract the mean of the background noise
                 audio_chunk -= bg_noise_mean
-
                 # Check if the loudness exceeds the threshold
                 if np.mean(np.abs(audio_chunk)) > LOUDNESS_THRESHOLD:
                     # Convert the audio file into MFCCs
@@ -160,8 +155,6 @@ def listen_and_predict(model, le, device, duration, noise_duration):
     except KeyboardInterrupt:
         print('Stopped listening')
 
-
-# Your existing code for loading data, building and training the model
 
 # Print available devices and prompt the user to select one
 devices = sd.query_devices()
