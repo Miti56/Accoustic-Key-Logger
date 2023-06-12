@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
+import pickle
 
 # Directory containing the audio files
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
@@ -48,8 +49,11 @@ model.add(Dense(len(np.unique(labels)), activation='softmax'))  # number of uniq
 # Compile the model
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# Train the model
-model.fit(data_train, labels_train, epochs=150, batch_size=32, validation_data=(data_test, labels_test))
+# Train the model and get the history
+history = model.fit(data_train, labels_train, epochs=150, batch_size=32, validation_data=(data_test, labels_test))
+# Save the history object to a file
+with open('history.pkl', 'wb') as f:
+    pickle.dump(history.history, f)
 
 # Evaluate the model
 loss, accuracy = model.evaluate(data_test, labels_test)
@@ -85,7 +89,7 @@ def predict_key_press(filename, model, le):
 
     return predicted_label[0]
 
-
+model.save('model.h5')
 # Directory containing the audio files
 # directory2 = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
 filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clipsCut/o_1338622.wav'
