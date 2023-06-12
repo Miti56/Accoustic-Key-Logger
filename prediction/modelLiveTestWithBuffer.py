@@ -96,21 +96,15 @@ q = Queue()
 
 # Callback function to capture audio in chunks
 def callback(indata, frames, time, status):
+    print('working')
     q.put(indata.copy())
 
 # Threshold for detecting a key press
-volume_threshold = 0.05  # adjust as needed
+volume_threshold = 0.0001  # adjust as needed
 sample_rate = 48000  # adjust as needed
 
-# Print available devices and prompt the user to select one
-devices = sd.query_devices()
-print("Available audio devices:")
-for i, device in enumerate(devices):
-    print(f"{i}: {device['name']}")
-selected_device = int(input("Please enter the number of your preferred audio device: "))
-
 # Duration of audio to record before and after the threshold is reached
-buffer_duration = 1.0  # in seconds
+buffer_duration = 0.2  # in seconds
 
 # Number of frames in the buffer
 buffer_frames = int(buffer_duration * sample_rate)
