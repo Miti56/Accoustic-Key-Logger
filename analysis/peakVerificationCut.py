@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import shutil
 
 # Directory containing the audio files
-input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clips'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips'
 
 # Directory to store the processed files
-output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clipsCut'
+output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut'
 os.makedirs(output_directory, exist_ok=True)
 
 # List to store the peak times of each file
@@ -50,7 +50,7 @@ for filename in os.listdir(input_directory):
 
         # Cut the audio 0.2 seconds before and after the first peak
         first_peak_index = peak_index[0]
-        start = int(max(0, first_peak_index - 0.05 * sample_rate))  # make sure we don't go beyond the start of the array
+        start = int(max(0, first_peak_index - 0.03 * sample_rate))  # make sure we don't go beyond the start of the array
         end = int(
         min(len(data), first_peak_index + 0.1 * sample_rate))  # make sure we don't go beyond the end of the array
         cut_data = data[start:end]
