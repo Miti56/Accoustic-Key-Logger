@@ -5,3 +5,4 @@
 *.png
 *.wav
 *.pkl
+.DS_Store
