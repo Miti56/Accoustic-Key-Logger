@@ -19,7 +19,7 @@ device_index = int(input("Enter the number of the microphone you want to use: ")
 
 # Set the recording parameters
 fs = 48000  # Sample rate
-seconds = 10  # Duration of recording
+seconds = 120  # Duration of recording
 channels = 1 # Number of channels used
 
 print("Press keys during the recor3ding. Press 'esc' to finish recording.")
@@ -58,6 +58,6 @@ for i, (key, press_time) in enumerate(keypresses):
     end_time = int((press_time + 0.5) * 1000)  # convert to ms
     clip = song[start_time:end_time]
     random_number = random.randint(1, 10000000)
-    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/clips/{key}_{i+random_number}.wav", format="wav")
+    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips/{key}_{i+random_number}.wav", format="wav")
 
 print("Audio clips created!")
