@@ -10,6 +10,9 @@ from scipy.signal import correlate
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
+
+#===============Leave-one-out cross-validation approach=============
+
 # Directory containing the audio files
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCutSimilarityNorm'
 
@@ -48,7 +51,7 @@ def predict_label(test_data):
 
     return predicted_label
 
-# leave-one-out cross-validation approach
+
 # Evaluate the algorithm on the entire data
 correct_predictions = 0
 for i in range(len(data)):
@@ -73,7 +76,7 @@ def predict_wav_file(filename):
 filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut/a_3620000.wav'
 predict_wav_file(filename)
 
-#==============TRAIN-TEST==========================
+#==============TRAIN-TEST===========================================================
 
 
 # Directory containing the audio files
