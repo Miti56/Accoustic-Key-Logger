@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
 
-#===============Leave-one-out cross-validation approach=============
+#===============Leave-one-out cross-validation approach============
 
 # Directory containing the audio files
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCutSimilarityNorm'
