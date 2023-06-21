@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.manifold import TSNE
 
 # Directory containing the audio files
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCutSimilarityNorm'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut'
 
 # Load and preprocess the data
 data = []
