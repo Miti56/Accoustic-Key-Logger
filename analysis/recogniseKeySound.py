@@ -1,3 +1,5 @@
+from random import random
+
 import scipy.io.wavfile
 from scipy.signal import correlate, find_peaks
 import matplotlib.pyplot as plt
@@ -8,8 +10,8 @@ import os
 
 
 # Load the .wav files
-sample_rate_pattern, pattern = scipy.io.wavfile.read('clips/d_5.wav')
-sample_rate_target, target = scipy.io.wavfile.read('recordingReduced.wav')
+sample_rate_pattern, pattern = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips/a_2850250.wav')
+sample_rate_target, target = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/record/Long1.wav')
 
 # Check if the sample rates match
 assert sample_rate_pattern == sample_rate_target, "Sample rates do not match"
@@ -22,7 +24,7 @@ target = target / np.max(np.abs(target))
 correlation = correlate(target, pattern, mode='valid')
 
 # Find peaks in the correlation that are above a certain height
-peak_threshold = 0.5  # adjust this value based on your needs
+peak_threshold = 0.3  # adjust this value based on your needs
 peaks, _ = find_peaks(correlation, height=peak_threshold * np.max(correlation))
 
 # Define a minimum distance between peaks (in samples)
@@ -66,6 +68,7 @@ for i in peak_times:
     start_time = int((i - 0.5) * 1000)  # convert to ms
     end_time = int((i + 0.5) * 1000)  # convert to ms
     clip = song[start_time:end_time]
-    clip.export(f"clipsTest/{'sample'}_{i}.wav", format="wav")
+    random_number = random.randint(1, 10000000)
+    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsFromWav/{'sample'}_{i+random_number}.wav", format="wav")
 
 print("Audio clips created!")
