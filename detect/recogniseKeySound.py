@@ -59,7 +59,7 @@ print(f"Found {len(average_peaks)} peaks")
 print(f"Peak times (in seconds): {peak_times}")
 
 print("Creating audio clips...")
-song = AudioSegment.from_wav("/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalWav/A.wav")
+song = AudioSegment.from_wav("/allClips/longWavsMechanicalWav/A.wav")
 
 if not os.path.exists("clipsTest"):
     os.makedirs("clipsTest")
