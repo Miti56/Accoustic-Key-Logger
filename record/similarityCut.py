@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import shutil
 
 # Directory containing the audio files
-input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/A'
 
 # Directory to store the processed files
-output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCutSimilarity'
+output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/ACut'
 os.makedirs(output_directory, exist_ok=True)
 
 # Reference file for alignment
-ref_filename = '../analysis/reference.wav'  # adjust to your reference file
+ref_filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalWav/reference.wav'  # adjust to your reference file
 ref_sample_rate, ref_data = scipy.io.wavfile.read(ref_filename)
 if len(ref_data.shape) > 1:
     ref_data = np.mean(ref_data, axis=1)
