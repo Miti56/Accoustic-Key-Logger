@@ -5,12 +5,10 @@ from pynput import keyboard
 from pydub import AudioSegment
 import time
 import os
-import os
 import numpy as np
 import scipy.io.wavfile
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
-import shutil
 
 # List available devices
 devices = sd.query_devices()
@@ -25,7 +23,7 @@ device_index = int(input("Enter the number of the microphone you want to use: ")
 
 # Set the recording parameters
 fs = 48000  # Sample rate
-seconds = 120  # Duration of recording
+seconds = 300  # Duration of recording
 channels = 1 # Number of channels used
 
 print("Press keys during the recor3ding. Press 'esc' to finish recording.")
@@ -64,15 +62,15 @@ for i, (key, press_time) in enumerate(keypresses):
     end_time = int((press_time + 0.5) * 1000)  # convert to ms
     clip = song[start_time:end_time]
     random_number = random.randint(1, 10000000)
-    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips/{key}_{i+random_number}.wav", format="wav")
+    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanical/{key}_{i+random_number}.wav", format="wav")
 
 print("Audio clips created!")
 
 # Directory containing the audio files
-input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clips'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanical'
 
 # Directory to store the processed files
-output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut'
+output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
 os.makedirs(output_directory, exist_ok=True)
 
 # List to store the peak times of each file
