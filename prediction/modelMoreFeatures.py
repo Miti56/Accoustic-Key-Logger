@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 
 # Directory containing the audio files
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCutSimilarityNorm'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
 
 # Load and preprocess the data
 data = []
@@ -127,7 +127,7 @@ def predict_key_press(filename, model, le):
 model.save('model.h5')
 # Directory containing the audio files
 # directory2 = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
-filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut/c_8684186.wav'
+filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut/b_6703567.wav'
 # for filename in os.listdir(directory2):
 predicted_key = predict_key_press(filename, model, le)
 print(f"The predicted key press for {filename} is {predicted_key}.")
