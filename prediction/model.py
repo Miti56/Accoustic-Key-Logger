@@ -39,25 +39,74 @@ labels = le.fit_transform(labels)
 # Split the data into training and testing sets
 data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 
-# Build the model
-model = Sequential()
-model.add(Dense(256, activation='relu', input_shape=(data_train.shape[1],)))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(len(np.unique(labels)), activation='softmax'))  # number of unique labels = number of output neurons
 
-# Compile the model
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# Train the model and get the history
-history = model.fit(data_train, labels_train, epochs=150, batch_size=32, validation_data=(data_test, labels_test))
-# Save the history object to a file
-with open('history.pkl', 'wb') as f:
-    pickle.dump(history.history, f)
+# Define the structure of the neural network model
+def build_model(input_shape, num_classes):
+    """Build a dense neural network model.
 
-# Evaluate the model
-loss, accuracy = model.evaluate(data_test, labels_test)
-print(f"Test accuracy: {accuracy}")
+    Args:
+        input_shape (tuple): Shape of the input data.
+        num_classes (int): Number of unique labels in the output.
+
+    Returns:
+        A Keras Sequential model.
+    """
+    model = Sequential()
+    model.add(Dense(256, activation='relu', input_shape=input_shape))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(num_classes, activation='softmax'))
+    return model
+
+
+# Prepare the model
+def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=150, batch_size=32):
+    """Compile and train the model.
+
+    Args:
+        model: The Keras Sequential model.
+        train_data: Training data.
+        train_labels: Training labels.
+        test_data: Testing data.
+        test_labels: Testing labels.
+        epochs (int, optional): Number of epochs. Defaults to 150.
+        batch_size (int, optional): Batch size. Defaults to 32.
+
+    Returns:
+        History object containing details about the training process.
+    """
+    # Compile the model
+    model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # Train the model and get the training history
+    history = model.fit(train_data, train_labels, epochs=epochs, batch_size=batch_size,
+                        validation_data=(test_data, test_labels))
+
+    return history
+
+
+def save_history(history, filename='history.pkl'):
+    # Save the history object to a file
+    with open(filename, 'wb') as f:
+        pickle.dump(history.history, f)
+
+
+def evaluate_model(model, test_data, test_labels):
+    """Evaluate the model on the test data.
+
+    Args:
+        model: The Keras Sequential model.
+        test_data: Testing data.
+        test_labels: Testing labels.
+    """
+    # Evaluate the model
+    loss, accuracy = model.evaluate(test_data, test_labels)
+    print(f"Test accuracy: {accuracy}")
+
+
+
+
 
 def predict_key_press(filename, model, le):
     # Load the .wav file
@@ -88,6 +137,19 @@ def predict_key_press(filename, model, le):
 
 
     return predicted_label[0]
+
+
+
+
+# Use the functions
+input_shape = (data_train.shape[1],)  # assuming data_train is already defined
+num_classes = len(np.unique(labels))  # assuming labels is already defined
+model = build_model(input_shape, num_classes)
+history = compile_and_train(model, data_train, labels_train, data_test,
+                            labels_test)  # assuming data_test, labels_test are already defined
+save_history(history)
+evaluate_model(model, data_test, labels_test)
+
 
 model.save('model.h5')
 # Directory containing the audio files
