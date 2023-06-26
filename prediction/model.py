@@ -160,7 +160,7 @@ save_history(history)
 evaluate_model(model, data_test, labels_test)
 
 # Testing
-model.save('model.h5')
+model.save('modelSimple.h5')
 # Directory containing the audio files
 # directory2 = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
 filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut/c_8684186.wav'
