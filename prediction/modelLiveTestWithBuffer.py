@@ -4,6 +4,7 @@ from collections import deque
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+from keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import sounddevice as sd
@@ -11,7 +12,7 @@ import librosa
 from queue import Queue
 
 # Directory containing the audio files
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
 
 # Load and preprocess the data
 data = []
@@ -42,18 +43,8 @@ labels = le.fit_transform(labels)
 # Split the data into training and testing sets
 data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 
-# Build the model
-model = Sequential()
-model.add(Dense(256, activation='relu', input_shape=(data_train.shape[1],)))
-model.add(Dense(128, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(len(np.unique(labels)), activation='softmax'))  # number of unique labels = number of output neurons
-
-# Compile the model
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-# Train the model
-model.fit(data_train, labels_train, epochs=150, batch_size=32, validation_data=(data_test, labels_test))
+# Load the model
+model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/prediction/modelSimple.h5')
 
 # Evaluate the model
 loss, accuracy = model.evaluate(data_test, labels_test)
