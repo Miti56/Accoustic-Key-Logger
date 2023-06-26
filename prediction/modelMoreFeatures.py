@@ -100,6 +100,8 @@ def compile_and_train(model, train_data, train_labels, test_data, test_labels, e
 
 
 def save_history(history, filename='history.pkl'):
+    """Save the model for later evaluation.
+            """
     # Save the history object to a file
     with open(filename, 'wb') as f:
         pickle.dump(history.history, f)
@@ -117,6 +119,13 @@ def evaluate_model(model, test_data, test_labels):
     loss, accuracy = model.evaluate(test_data, test_labels)
     print(f"Test accuracy: {accuracy}")
 def predict_key_press(filename, model, le):
+    """Prediction of keypresses.
+
+           Args:
+               filename: Location of files.
+               model: Model built previously.
+               le: Predictions.
+           """
     # Load the .wav file
     audio, sample_rate = librosa.load(filename)
 
