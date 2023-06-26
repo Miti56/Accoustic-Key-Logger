@@ -87,6 +87,8 @@ def compile_and_train(model, train_data, train_labels, test_data, test_labels, e
 
 
 def save_history(history, filename='history.pkl'):
+    """Save the model for later evaluation.
+        """
     # Save the history object to a file
     with open(filename, 'wb') as f:
         pickle.dump(history.history, f)
@@ -109,6 +111,13 @@ def evaluate_model(model, test_data, test_labels):
 
 
 def predict_key_press(filename, model, le):
+    """Prediction of keypresses.
+
+        Args:
+            filename: Location of files.
+            model: Model built previously.
+            le: Predictions.
+        """
     # Load the .wav file
     audio, sample_rate = librosa.load(filename)
 
@@ -141,7 +150,7 @@ def predict_key_press(filename, model, le):
 
 
 
-# Use the functions
+# Run
 input_shape = (data_train.shape[1],)  # assuming data_train is already defined
 num_classes = len(np.unique(labels))  # assuming labels is already defined
 model = build_model(input_shape, num_classes)
@@ -150,7 +159,7 @@ history = compile_and_train(model, data_train, labels_train, data_test,
 save_history(history)
 evaluate_model(model, data_test, labels_test)
 
-
+# Testing
 model.save('model.h5')
 # Directory containing the audio files
 # directory2 = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
