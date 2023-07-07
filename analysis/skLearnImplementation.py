@@ -21,22 +21,22 @@ for filename in os.listdir(directory):
         mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
         mfccs_processed = np.mean(mfccs.T, axis=0)
 
-        # Compute other features
-        chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
-        chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
+        # # Compute other features
+        # chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
+        # chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
+        #
+        # spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate)
+        # spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
+        #
+        # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
+        # tonnetz_processed = np.mean(tonnetz.T, axis=0)
+        #
+        # # Concatenate the features together
+        # combined_features = np.concatenate(
+        #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed])
 
-        spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate)
-        spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
-
-        tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
-        tonnetz_processed = np.mean(tonnetz.T, axis=0)
-
-        # Concatenate the features together
-        combined_features = np.concatenate(
-            [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed])
-
-        #data.append(mfccs_processed)
-        data.append(combined_features)
+        data.append(mfccs_processed)
+        # data.append(combined_features)
         filenames.append(filename)
 
 # Standardize the data to have zero mean and unit variance
