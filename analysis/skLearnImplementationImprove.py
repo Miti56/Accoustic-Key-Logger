@@ -8,7 +8,7 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import silhouette_score
 
 # Directory containing the audio files
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsForTesting'
 
 # Load and preprocess the data
 data = []
@@ -20,7 +20,8 @@ for filename in os.listdir(directory):
         audio, sample_rate = librosa.load(os.path.join(directory, filename))
 
         # Convert the audio file into MFCCs
-        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+        #mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
         mfccs_processed = np.mean(mfccs.T, axis=0)
 
         # # Compute other features
