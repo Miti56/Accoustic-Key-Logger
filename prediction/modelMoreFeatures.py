@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 
 # Directory containing the audio files
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
 
 # Load and preprocess the data
 data = []
@@ -19,14 +19,14 @@ for filename in os.listdir(directory):
         audio, sample_rate = librosa.load(os.path.join(directory, filename))
 
         # Convert the audio file into MFCCs
-        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
         mfccs_processed = np.mean(mfccs.T,axis=0)
 
         # Compute other features
         chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
         chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
 
-        spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate)
+        spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
         spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
 
         tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
@@ -130,14 +130,14 @@ def predict_key_press(filename, model, le):
     audio, sample_rate = librosa.load(filename)
 
     # Convert the audio file into MFCCs
-    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
+    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
     mfccs_processed = np.mean(mfccs.T,axis=0)
 
     # Compute other features
     chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
     chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
 
-    spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate)
+    spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
     spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
 
     tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
@@ -181,9 +181,21 @@ evaluate_model(model, data_test, labels_test)
 
 model.save('modelComplex.h5')
 # Directory containing the audio files
-# directory2 = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/clipsCut'
-filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut/b_6703567.wav'
-# for filename in os.listdir(directory2):
-predicted_key = predict_key_press(filename, model, le)
-print(f"The predicted key press for {filename} is {predicted_key}.")
+# Directory containing the audio files for testing
+test_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsForTesting'
+
+# List all the files in the test directory
+test_files = os.listdir(test_directory)
+
+# Iterate over the test files
+for filename in test_files:
+    if filename.endswith(".wav"):
+        # Get the full path of the test file
+        file_path = os.path.join(test_directory, filename)
+
+        # Predict the key press for the test file
+        predicted_key = predict_key_press(file_path, model, le)
+
+        # Print the predicted key press for the test file
+        print(f"The predicted key press for {filename} is {predicted_key}.")
 
