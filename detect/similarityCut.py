@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import shutil
 
 # Directory containing the audio files
-input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/A'
+input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCut'
 
 # Directory to store the processed files
-output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/ACut'
+output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsForTestingTest2'
 os.makedirs(output_directory, exist_ok=True)
 
 # Reference file for alignment
-ref_filename = '/allClips/longWavsMechanicalWav/reference.wav'  # adjust to your reference file
+ref_filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/referenceMechanical.wav'  # adjust to your reference file
 ref_sample_rate, ref_data = scipy.io.wavfile.read(ref_filename)
 if len(ref_data.shape) > 1:
     ref_data = np.mean(ref_data, axis=1)
@@ -39,8 +39,8 @@ for filename in os.listdir(input_directory):
         delay = len(data) - np.argmax(corr)
 
         # Cut the audio 0.2 seconds before and after the peak of correlation
-        start = int(max(0, delay - 0.03 * sample_rate))  # make sure we don't go beyond the start of the array
-        end = int(min(len(data), delay + 0.1 * sample_rate))  # make sure we don't go beyond the end of the array
+        start = int(max(0, delay - 0.02 * sample_rate))  # make sure we don't go beyond the start of the array
+        end = int(min(len(data), delay + 0.05 * sample_rate))  # make sure we don't go beyond the end of the array
         cut_data = data[start:end]
 
         # Copy the file to the new directory and save the cut audio
