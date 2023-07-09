@@ -1,3 +1,4 @@
+import sys
 import random
 import librosa
 import sounddevice as sd
@@ -11,6 +12,48 @@ import os
 import numpy as np
 import scipy.io.wavfile
 from scipy.signal import correlate
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QComboBox, QPushButton
+from PyQt6.QtCore import Qt
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Audio Recording")
+        self.setGeometry(100, 100, 400, 200)
+
+        # Create UI elements
+        self.label = QLabel("Select Microphone:", self)
+        self.label.setGeometry(20, 20, 150, 30)
+
+        self.microphone_combobox = QComboBox(self)
+        self.microphone_combobox.setGeometry(180, 20, 200, 30)
+
+        self.start_button = QPushButton("Start Recording", self)
+        self.start_button.setGeometry(20, 70, 360, 40)
+
+        # Set initial values or default options
+        self.populate_microphone_options()
+        self.start_button.clicked.connect(self.start_recording)
+
+    def populate_microphone_options(self):
+        devices = sd.query_devices()
+        input_devices = [device['name'] for device in devices if device['max_input_channels'] > 0]
+
+        # Populate the microphone combobox with the available options
+        self.microphone_combobox.addItems(input_devices)
+
+    def start_recording(self):
+        # Retrieve the selected microphone from the combobox
+        selected_microphone = self.microphone_combobox.currentText()
+
+        # Call the original code to record audio and display the output in the UI
+        keypresses = record_audio(fs=48000, seconds=5, channels=1, device=selected_microphone)
+        for key, press_time in keypresses:
+            self.append_log(f"{key} pressed at {press_time:.2f} seconds")
+
+    def append_log(self, message):
+        # Append the log message to a QLabel or QTextEdit widget in the UI
+        pass
 
 
 def select_microphone():
@@ -44,30 +87,33 @@ def record_audio(fs, seconds, channels, device):
     listener = keyboard.Listener(on_press=on_press)
     listener.start()
 
-    myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=channels, device=device)
-    sd.wait()  # Wait until recording is finished
-    sf.write('Long1.wav', myrecording, fs)  # Save as WAV file
+    try:
+        myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=channels, device=device)
+        sd.wait()  # Wait until recording is finished
+        sf.write('fullRecording.wav', myrecording, fs)  # Save as WAV file
+    except Exception as e:
+        print(f"An error occurred during recording: {e}")
 
     listener.stop()
 
     return keypresses
 
 
+
 def create_audio_clips(keypresses):
     print("Creating audio clips...")
 
-    song = AudioSegment.from_wav("Long1.wav")
+    song = AudioSegment.from_wav("fullRecording.wav")
 
     if not os.path.exists("data"):
         os.makedirs("data")
-        os.makedirs("temp")
 
     for i, (key, press_time) in enumerate(keypresses):
         start_time = int((press_time - 0.5) * 1000)  # convert to ms
         end_time = int((press_time + 0.5) * 1000)  # convert to ms
         clip = song[start_time:end_time]
         random_number = random.randint(1, 10000000)
-        clip.export(f"temp/{key}_{i+random_number}.wav", format="wav")
+        clip.export(f"data/{key}_{i+random_number}.wav", format="wav")
 
     print("Audio clips created!")
 
@@ -90,13 +136,13 @@ def preprocess_audio(directory, desired_length):
                 sf.write(file_path, audio, sample_rate)
 
 
-def cut_audio_files(input_directory, output_directory):
+def cut_audio_files(output_directory):
     peak_times_list = []
     combined_loudness = []
 
-    for filename in os.listdir(input_directory):
+    for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
-            file_path = os.path.join(input_directory, filename)
+            file_path = os.path.join(output_directory, filename)
 
             sample_rate, data = scipy.io.wavfile.read(file_path)
 
@@ -151,13 +197,14 @@ def similarity_cut(output_directory, reference_file):
             delay = len(data) - np.argmax(corr)
 
             # Cut the audio 0.2 seconds before and after the peak of correlation
-            start = int(max(0, delay - 0.02 * sample_rate))  
+            start = int(max(0, delay - 0.02 * sample_rate))
             end = int(min(len(data), delay + 0.05 * sample_rate))
             cut_data = data[start:end]
 
             # Copy the file to the new directory and save the cut audio
             new_file_path = os.path.join(output_directory, filename)
             scipy.io.wavfile.write(new_file_path, sample_rate, cut_data)
+
 
 def size_cut(output_directory, desired_length):
     # Iterate over the audio files in the directory
@@ -183,25 +230,25 @@ def size_cut(output_directory, desired_length):
                 # Save the preprocessed audio signal
                 sf.write(file_path, audio, sample_rate)
 
+
 def main():
-    device = select_microphone()
-    keypresses = record_audio(fs=48000, seconds=5, channels=1, device=device)
-    create_audio_clips(keypresses)
-
-    input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/temp'
-    output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/data'
-    # os.makedirs(output_directory, exist_ok=True)
-
-    preprocess_audio(input_directory, desired_length=48000)
-    cut_audio_files(input_directory, output_directory)
-
-    # Size Cut
-    size_cut(output_directory, desired_length=1600)
-
-    # Delete temp files
-    folder_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/temp'
-    [os.remove(os.path.join(folder_path, file)) for file in os.listdir(folder_path)]
-
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    def excepthook(type, value, traceback):
+        print("Unhandled exception:", type, value)
+        sys.__excepthook__(type, value, traceback)
+
+    sys.excepthook = excepthook
+
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
+
+
