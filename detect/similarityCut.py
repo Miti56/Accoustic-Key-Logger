@@ -13,7 +13,7 @@ output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/c
 os.makedirs(output_directory, exist_ok=True)
 
 # Reference file for alignment
-ref_filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/referenceMechanical.wav'  # adjust to your reference file
+ref_filename = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/referenceMechanical.wav'
 ref_sample_rate, ref_data = scipy.io.wavfile.read(ref_filename)
 if len(ref_data.shape) > 1:
     ref_data = np.mean(ref_data, axis=1)
