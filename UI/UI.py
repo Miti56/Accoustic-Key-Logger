@@ -14,6 +14,10 @@ import scipy.io.wavfile
 from scipy.signal import correlate
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QComboBox, QPushButton
 from PyQt6.QtCore import Qt
+import traceback
+
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -236,6 +240,11 @@ def main():
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+def excepthook(type, value, traceback):
+    print("Unhandled exception:")
+    traceback.print_exception(type, value, traceback)
+    sys.excepthook = excepthook
 
 if __name__ == "__main__":
     import sys
