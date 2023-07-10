@@ -6,7 +6,8 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.manifold import TSNE
 from sklearn.metrics import silhouette_score
-
+from scipy.signal import find_peaks
+import scipy.io.wavfile
 
 def load_and_process_data(directory):
     data = []
@@ -101,19 +102,34 @@ def analyze_peak_times(directory):
 
 
 def main():
-    directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
-    data, filenames, labels = load_and_process_data(directory)
-    data_2d = perform_tsne(data)
+    while True:
+        use_default = input("Do you want to use the default directory (Y/N)? ").upper() == 'Y'
 
-    num_clusters = 26
-    kmeans, sil_score = perform_clustering(data, num_clusters)
-    plot_clusters(data_2d, kmeans, num_clusters)
+        if use_default:
+            directory = default_directory
+        else:
+            directory = input("Enter the directory path: ")
 
-    print(f"Silhouette score: {sil_score}")
-    print_cluster_information(filenames, kmeans.labels_, labels)
+        try:
+            data, filenames, labels = load_and_process_data(directory)
+            data_2d = perform_tsne(data)
 
-    analyze_peak_times(directory)
+            num_clusters = 26
+            kmeans, sil_score = perform_clustering(data, num_clusters)
+            plot_clusters(data_2d, kmeans, num_clusters)
+
+            print(f"Silhouette score: {sil_score}")
+            print_cluster_information(filenames, kmeans.labels_, labels)
+
+            analyze_peak_times(directory)
+
+            break  # Break out of the loop if the directory processing is successful
+        except FileNotFoundError:
+            print("Directory not found. Please make sure the directory exists and try again.")
+
+
 
 
 if __name__ == "__main__":
