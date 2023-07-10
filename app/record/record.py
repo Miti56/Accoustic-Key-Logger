@@ -185,27 +185,68 @@ def size_cut(output_directory, desired_length):
                 sf.write(file_path, audio, sample_rate)
 
 def main():
-    device = select_microphone()
-    keypresses = record_audio(fs=48000, seconds=20, channels=1, device=device)
-    create_audio_clips(keypresses)
     output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+
+    # Ask if the user wants to delete the files in the data folder
+    delete_files = input("Do you want to delete the files in the data folder (Y/N)? ").upper() == 'Y'
+
+    if delete_files:
+        delete_existing_files(output_directory)
+
+    device = select_microphone()
+
+    record_duration = get_valid_duration()
+    keypresses = record_audio(fs=48000, seconds=record_duration, channels=1, device=device)
+    create_audio_clips(keypresses)
 
     preprocess_audio(output_directory, desired_length=48000)
 
-    # Cut using peaks
-    cut_audio_files(output_directory)
-    # Or cut using similarity
-    #similarity_cut(output_directory,reference_file="/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav")
+    # Ask if the user wants to cut using peaks, similarity, or skip cutting step
+    cut_method = input("Do you want to cut using peaks (P), similarity (S), or skip cutting (N)? ").upper()
 
+    if cut_method == 'P':
+        cut_audio_files(output_directory)
+    elif cut_method == 'S':
+        use_default_reference = input("Do you want to use the default reference file (Y/N)? ").upper() == 'Y'
+        if use_default_reference:
+            reference_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav'
+        else:
+            reference_file = input("Enter the path to the reference file: ")
+        similarity_cut(output_directory, reference_file)
+    elif cut_method == 'N':
+        print("Skipping cutting step.")
+    else:
+        print("Invalid choice. Skipping cutting step.")
 
     # Size Cut
     size_cut(output_directory, desired_length=1600)
 
-    # # Delete files in case of restart
-    # folder_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-    # [os.remove(os.path.join(folder_path, file)) for file in os.listdir(folder_path)]
     print("Everything finished!")
 
+
+def delete_existing_files(directory):
+    file_list = os.listdir(directory)
+    if file_list:
+        confirm = input(f"The data folder contains {len(file_list)} files. Are you sure you want to delete them (Y/N)? ").upper() == 'Y'
+        if confirm:
+            [os.remove(os.path.join(directory, file)) for file in file_list]
+            print("Files deleted.")
+        else:
+            print("Deletion cancelled.")
+    else:
+        print("No files found in the data folder.")
+
+def get_valid_duration():
+    while True:
+        duration_input = input("Enter the recording duration in seconds: ")
+        try:
+            duration = int(duration_input)
+            if duration > 0:
+                return duration
+            else:
+                print("Please enter a positive number.")
+        except ValueError:
+            print("Please enter a valid number.")
 
 if __name__ == "__main__":
     main()
