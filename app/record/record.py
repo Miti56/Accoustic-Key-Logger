@@ -184,7 +184,7 @@ def size_cut(output_directory, desired_length):
 
 def main():
     device = select_microphone()
-    keypresses = record_audio(fs=48000, seconds=5, channels=1, device=device)
+    keypresses = record_audio(fs=48000, seconds=20, channels=1, device=device)
     create_audio_clips(keypresses)
     output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
