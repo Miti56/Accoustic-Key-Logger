@@ -172,6 +172,7 @@ def size_cut(output_directory, desired_length):
             # Perform preprocessing if the length is different from the desired length
             if current_length != desired_length:
                 if current_length < desired_length:
+                    print("Some files need some processing...")
                     # Pad the audio signal with zeros
                     pad_length = desired_length - current_length
                     audio = np.pad(audio, (0, pad_length), mode='constant')
@@ -180,6 +181,7 @@ def size_cut(output_directory, desired_length):
                     audio = audio[:desired_length]
 
                 # Save the preprocessed audio signal
+                print("Audio processed successfully")
                 sf.write(file_path, audio, sample_rate)
 
 def main():
