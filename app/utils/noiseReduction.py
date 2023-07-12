@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import noisereduce as nr
 import os
 from scipy.signal import spectrogram
+import buckupData
 
 
 def load_audio(file_path):
@@ -16,7 +17,7 @@ def save_audio(file_path, rate, data):
 
 
 def create_spectrogram(data, rate):
-    frequencies, times, Sxx = spectrogram(data, fs=rate, nperseg=4096, noverlap=2048)
+    frequencies, times, Sxx = spectrogram(data, fs=rate, nperseg=1600, noverlap=1536)
     return frequencies, times, Sxx
 
 
@@ -28,15 +29,15 @@ def plot_spectrogram(times, frequencies, Sxx, title):
     plt.show()
 
 
-def reduce_noise(data, noise_samples):
-    reduced_noise = nr.reduce_noise(y=data, noise_samples=noise_samples)
+def reduce_noise(data, sr):
+    reduced_noise = nr.reduce_noise(y=data, sr=sr)
     return reduced_noise
 
 
 def main():
     # Default paths
-    default_input_directory = 'clips'
-    default_output_directory = 'clipsReduced'
+    default_input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    default_output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
     # Prompt the user for input and output paths
     use_default = input("Do you want to use the default settings? (Y/N): ").upper() == 'Y'
@@ -47,6 +48,12 @@ def main():
     else:
         input_directory = input("Enter the input directory path: ")
         output_directory = input("Enter the output directory path: ")
+
+    # Backup the data before performing noise reduction
+    backup_option = input("Do you want to backup the data before processing? (Y/N): ").upper() == 'Y'
+    if backup_option:
+        buckupData.main()
+        print("Data backup complete.")
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_directory, exist_ok=True)
@@ -63,11 +70,8 @@ def main():
             frequencies, times, Sxx = create_spectrogram(data, rate)
             plot_spectrogram(times, frequencies, Sxx, "Spectrogram before noise reduction: " + filename)
 
-            # Identify the noise - Here we are assuming the first 1000 samples represent noise
-            noise_part = data[0:1000]
-
             # Reduce noise
-            reduced_noise = reduce_noise(data, noise_part)
+            reduced_noise = reduce_noise(data, rate)
 
             # Save noise reduced signal to a file
             output_file_path = os.path.join(output_directory, "reduced_" + filename)
