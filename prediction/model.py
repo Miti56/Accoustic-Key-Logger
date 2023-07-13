@@ -6,6 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
 import pickle
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Directory containing the audio files
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
@@ -61,27 +62,16 @@ def build_model(input_shape, num_classes):
 
 
 # Prepare the model
-def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=150, batch_size=32):
-    """Compile and train the model.
-
-    Args:
-        model: The Keras Sequential model.
-        train_data: Training data.
-        train_labels: Training labels.
-        test_data: Testing data.
-        test_labels: Testing labels.
-        epochs (int, optional): Number of epochs. Defaults to 150.
-        batch_size (int, optional): Batch size. Defaults to 32.
-
-    Returns:
-        History object containing details about the training process.
-    """
+def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=200, batch_size=32):
     # Compile the model
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+    # Define early stopping callback
+    early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
+
     # Train the model and get the training history
     history = model.fit(train_data, train_labels, epochs=epochs, batch_size=batch_size,
-                        validation_data=(test_data, test_labels))
+                        validation_data=(test_data, test_labels), callbacks=[early_stopping])
 
     return history
 
@@ -122,7 +112,7 @@ def predict_key_press(filename, model, le):
     audio, sample_rate = librosa.load(filename)
 
     # Convert the audio file into MFCCs
-    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=512)
+    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
     mfccs_processed = np.mean(mfccs.T,axis=0)
 
     # Reshape the data for prediction
@@ -138,11 +128,11 @@ def predict_key_press(filename, model, le):
     # Convert the predicted index to its corresponding label
     predicted_label = le.inverse_transform([predicted_index])
 
-    # Print out all the classes and their probabilities
-    sorted_indices = np.argsort(prediction[0])[::-1]  # get the indices that would sort the array, in descending order
-    print("All classes and their probabilities:")
-    for idx in sorted_indices:
-        print(f"{le.inverse_transform([idx])[0]}: {prediction[0][idx]}")
+    # # Print out all the classes and their probabilities
+    # sorted_indices = np.argsort(prediction[0])[::-1]  # get the indices that would sort the array, in descending order
+    # print("All classes and their probabilities:")
+    # for idx in sorted_indices:
+    #     print(f"{le.inverse_transform([idx])[0]}: {prediction[0][idx]}")
 
 
     return predicted_label[0]
@@ -171,7 +161,7 @@ model.save('modelSimple.h5')
 # print(f"The predicted key press for {filename} is {predicted_key}.")
 
 # Directory containing the audio files for testing
-test_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsForTesting'
+test_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
 
 # List all the files in the test directory
 test_files = os.listdir(test_directory)
