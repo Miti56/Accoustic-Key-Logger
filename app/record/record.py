@@ -53,22 +53,23 @@ def record_audio(fs, seconds, channels, device):
     return keypresses
 
 
-def create_audio_clips(keypresses):
+def create_audio_clips(keypresses, output_directory):
     print("Creating audio clips...")
 
     song = AudioSegment.from_wav("fullRecording.wav")
 
-    if not os.path.exists("data"):
-        os.makedirs("data")
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
     for i, (key, press_time) in enumerate(keypresses):
         start_time = int((press_time - 0.5) * 1000)  # convert to ms
         end_time = int((press_time + 0.5) * 1000)  # convert to ms
         clip = song[start_time:end_time]
         random_number = random.randint(1, 10000000)
-        clip.export(f"data/{key}_{i+random_number}.wav", format="wav")
+        clip.export(f"{output_directory}/{key}_{i+random_number}.wav", format="wav")
 
     print("Audio clips created!")
+
 
 
 def preprocess_audio(directory, desired_length):
@@ -113,15 +114,17 @@ def cut_audio_files(output_directory):
 
             if len(peak_index) == 0:
                 print(f"No peaks found in {filename}, skipping.")
+                os.remove(file_path)
                 continue
 
             first_peak_index = peak_index[0]
             start = int(max(0, first_peak_index - 0.03 * sample_rate))
-            end = int(min(len(data), first_peak_index + 0.1 * sample_rate))
+            end = int(min(len(data), first_peak_index + 0.2 * sample_rate))
             cut_data = data[start:end]
 
             new_file_path = os.path.join(output_directory, filename)
             scipy.io.wavfile.write(new_file_path, sample_rate, cut_data)
+
 
 
 def similarity_cut(output_directory, reference_file):
@@ -188,6 +191,14 @@ def size_cut(output_directory, desired_length):
 def main():
     output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
+    # Ask if the user wants to create a repository of unseen data
+    create_unseen_data = input("Do you want to create a repository of unseen data (Y/N)? ").upper() == 'Y'
+
+    if create_unseen_data:
+        output_directory = input("Enter the output directory path for unseen data: ")
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
     # Ask if the user wants to delete the files in the data folder
     delete_files = input("Do you want to delete the files in the data folder (Y/N)? ").upper() == 'Y'
 
@@ -198,7 +209,7 @@ def main():
 
     record_duration = get_valid_duration()
     keypresses = record_audio(fs=48000, seconds=record_duration, channels=1, device=device)
-    create_audio_clips(keypresses)
+    create_audio_clips(keypresses, output_directory)
 
     preprocess_audio(output_directory, desired_length=48000)
 
