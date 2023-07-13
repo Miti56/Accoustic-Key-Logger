@@ -20,15 +20,15 @@ def predict_label(test_data, data, labels):
 
     return predicted_label
 
-def evaluate_accuracy(data, labels):
-    correct_predictions = 0
-    for i in range(len(data)):
-        predicted_label = predict_label(data[i], data, labels)
-        if predicted_label == labels[i]:
-            correct_predictions += 1
-
-    accuracy = correct_predictions / len(data)
-    return accuracy
+# def evaluate_accuracy(data, labels):
+#     correct_predictions = 0
+#     for i in range(len(data)):
+#         predicted_label = predict_label(data[i], data, labels)
+#         if predicted_label == labels[i]:
+#             correct_predictions += 1
+#
+#     accuracy = correct_predictions / len(data)
+#     return accuracy
 
 def predict_wav_file(filename, data, labels, le):
     # Load the .wav file
@@ -72,14 +72,17 @@ def main():
     # Encode the labels
     le = LabelEncoder()
     labels = le.fit_transform(labels)
+    #
+    # # Evaluate the algorithm on the entire data
+    # accuracy = evaluate_accuracy(data, labels)
+    # print(f"Accuracy on entire data: {accuracy}")
 
-    # Evaluate the algorithm on the entire data
-    accuracy = evaluate_accuracy(data, labels)
-    print(f"Accuracy on entire data: {accuracy}")
-
-    # Predict a .wav file
-    filename = input("Enter the path of the .wav file to predict: ")
-    predict_wav_file(filename, data, labels, le)
+    # Keep predicting WAV files until user types "quit"
+    while True:
+        file_path = input("Enter the path of the .wav file to predict (type 'quit' to exit): ")
+        if file_path.lower() == 'quit':
+            break
+        predict_wav_file(file_path, data, labels, le)
 
 if __name__ == "__main__":
     main()
