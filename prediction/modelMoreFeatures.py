@@ -182,7 +182,7 @@ evaluate_model(model, data_test, labels_test)
 model.save('modelComplex.h5')
 # Directory containing the audio files
 # Directory containing the audio files for testing
-test_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsForTesting'
+test_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
 
 # List all the files in the test directory
 test_files = os.listdir(test_directory)
