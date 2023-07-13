@@ -10,8 +10,8 @@ import os
 
 
 # Load the .wav files
-sample_rate_pattern, pattern = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalWav/reference.wav')
-sample_rate_target, target = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalWav/A.wav')
+sample_rate_pattern, pattern = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav')
+sample_rate_target, target = scipy.io.wavfile.read('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/fullRecording.wav')
 
 # Check if the sample rates match
 assert sample_rate_pattern == sample_rate_target, "Sample rates do not match"
@@ -58,17 +58,17 @@ plt.show()
 print(f"Found {len(average_peaks)} peaks")
 print(f"Peak times (in seconds): {peak_times}")
 
-print("Creating audio clips...")
-song = AudioSegment.from_wav("/allClips/longWavsMechanicalWav/A.wav")
-
-if not os.path.exists("clipsTest"):
-    os.makedirs("clipsTest")
-
-for i in peak_times:
-    start_time = int((i - 0.1) * 1000)  # convert to ms
-    end_time = int((i + 0.4) * 1000)  # convert to ms
-    clip = song[start_time:end_time]
-    random_number = random.randint(1, 10000000)
-    clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/{'a'}_{i+random_number}.wav", format="wav")
-
-print("Audio clips created!")
+# print("Creating audio clips...")
+# song = AudioSegment.from_wav("/allClips/longWavsMechanicalWav/A.wav")
+#
+# if not os.path.exists("clipsTest"):
+#     os.makedirs("clipsTest")
+#
+# for i in peak_times:
+#     start_time = int((i - 0.1) * 1000)  # convert to ms
+#     end_time = int((i + 0.4) * 1000)  # convert to ms
+#     clip = song[start_time:end_time]
+#     random_number = random.randint(1, 10000000)
+#     clip.export(f"/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/longWavsMechanicalCut/{'a'}_{i+random_number}.wav", format="wav")
+#
+# print("Audio clips created!")
