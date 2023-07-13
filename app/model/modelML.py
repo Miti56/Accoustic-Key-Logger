@@ -6,6 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
 import pickle
+from tensorflow.keras.callbacks import EarlyStopping
 
 
 def load_and_process_data(directory):
@@ -14,9 +15,25 @@ def load_and_process_data(directory):
     for filename in os.listdir(directory):
         if filename.endswith(".wav"):
             audio, sample_rate = librosa.load(os.path.join(directory, filename))
+            # Convert the audio file into MFCCs
             mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
             mfccs_processed = np.mean(mfccs.T, axis=0)
+
+            # # Compute other features
+            # chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
+            # chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
+            #
+            # spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
+            # spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
+            #
+            # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
+            # tonnetz_processed = np.mean(tonnetz.T, axis=0)
+
+            # # Concatenate the features together
+            # combined_features = np.concatenate(
+            #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed])
             label = filename.split('_')[0]
+            # data.append(combined_features)
             data.append(mfccs_processed)
             labels.append(label)
     data = np.array(data)
@@ -35,10 +52,17 @@ def build_model(input_shape, num_classes):
     return model
 
 
-def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=150, batch_size=32):
+def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=200, batch_size=32):
+    # Compile the model
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # Define early stopping callback
+    early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
+
+    # Train the model and get the training history
     history = model.fit(train_data, train_labels, epochs=epochs, batch_size=batch_size,
-                        validation_data=(test_data, test_labels))
+                        validation_data=(test_data, test_labels), callbacks=[early_stopping])
+
     return history
 
 
@@ -54,9 +78,29 @@ def evaluate_model(model, test_data, test_labels):
 
 def predict_key_press(filename, model, le):
     audio, sample_rate = librosa.load(filename)
-    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=512)
+    # Convert the audio file into MFCCs
+    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
     mfccs_processed = np.mean(mfccs.T, axis=0)
+
+    # # Compute other features
+    # chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
+    # chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
+    #
+    # spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
+    # spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
+    #
+    # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
+    # tonnetz_processed = np.mean(tonnetz.T, axis=0)
+    #
+    # # Concatenate the features together
+    # combined_features = np.concatenate(
+    #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed], axis=1)
+    # # Reshape the data for prediction
+
+    # The model expects input in the form of a batch of samples
     mfccs_processed = mfccs_processed.reshape(1, -1)
+    # # Use the model to predict the label for the new audio file
+    # prediction = model.predict(combined_features)
     prediction = model.predict(mfccs_processed)
     predicted_index = np.argmax(prediction[0])
     predicted_label = le.inverse_transform([predicted_index])
@@ -65,6 +109,7 @@ def predict_key_press(filename, model, le):
     for idx in sorted_indices:
         print(f"{le.inverse_transform([idx])[0]}: {prediction[0][idx]}")
     return predicted_label[0]
+
 
 
 def get_directory_input():
@@ -105,7 +150,8 @@ def main():
     model.save('model.h5')
 
     # Testing
-    default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
+    print("To use this option you will need to have previously created unseen data")
     use_default = input("Do you want to use the default directory for testing? (Y/N): ").upper() == 'Y'
 
     if use_default:
@@ -131,12 +177,12 @@ def main():
             print(f"The predicted key press for {filename} is {predicted_key}.")
 
 
-# Perform train-test split outside the main function
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-data, labels, le = load_and_process_data(directory)
-input_shape = (data.shape[1],)
-num_classes = len(np.unique(labels))
-model = build_model(input_shape, num_classes)
-data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
+# # Perform train-test split outside the main function
+# directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+# data, labels, le = load_and_process_data(directory)
+# input_shape = (data.shape[1],)
+# num_classes = len(np.unique(labels))
+# model = build_model(input_shape, num_classes)
+# data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 if __name__ == "__main__":
     main()
