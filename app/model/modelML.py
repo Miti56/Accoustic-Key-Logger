@@ -40,6 +40,8 @@ def load_and_process_data(directory):
     labels = np.array(labels)
     le = LabelEncoder()
     labels = le.fit_transform(labels)
+    # Save the label encoder and its classes
+    np.save('label_encoder.npy', le.classes_)
     return data, labels, le
 
 
@@ -130,7 +132,7 @@ def get_num_files_input():
 
 def main():
     # Directory containing the audio files
-    directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
 
     data, labels, le = load_and_process_data(directory)
 
