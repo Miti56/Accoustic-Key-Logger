@@ -179,12 +179,12 @@ def main():
             print(f"The predicted key press for {filename} is {predicted_key}.")
 
 
-# # Perform train-test split outside the main function
-# directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-# data, labels, le = load_and_process_data(directory)
-# input_shape = (data.shape[1],)
-# num_classes = len(np.unique(labels))
-# model = build_model(input_shape, num_classes)
-# data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
+# Perform train-test split outside the main function
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+data, labels, le = load_and_process_data(directory)
+input_shape = (data.shape[1],)
+num_classes = len(np.unique(labels))
+model = build_model(input_shape, num_classes)
+data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 if __name__ == "__main__":
     main()
