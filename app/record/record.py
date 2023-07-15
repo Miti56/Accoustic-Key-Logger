@@ -189,6 +189,12 @@ def size_cut(output_directory, desired_length):
     print("Audio processed successfully")
 
 def main():
+    # Ask if the user needs to record data
+    record_data = input("Do you need to record any data (Y/N)? ").upper() == 'Y'
+
+    if not record_data:
+        print("Program terminated.")
+        return
     output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
     # Ask if the user wants to create a repository of unseen data
