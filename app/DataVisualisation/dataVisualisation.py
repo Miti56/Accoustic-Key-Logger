@@ -38,7 +38,8 @@ def perform_tsne(data):
 
 
 def perform_clustering(data, num_clusters):
-    kmeans = KMeans(n_clusters=num_clusters, random_state=42).fit(data)
+    n_init = 10
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=n_init).fit(data)
     sil_score = silhouette_score(data, kmeans.labels_)
     return kmeans, sil_score
 
@@ -55,17 +56,57 @@ def plot_clusters(data_2d, kmeans, num_clusters):
     plt.colorbar(scatter)
     plt.show()
 
+def extract_mfccs(filename):
+    audio, sample_rate = librosa.load(filename)
+    mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
+    return mfccs
+
+def preprocess_mfccs(mfccs):
+    scaler = StandardScaler()
+    mfccs_processed = np.mean(mfccs.T, axis=0)
+    mfccs_processed = scaler.fit_transform(mfccs_processed.reshape(1, -1))
+    return mfccs_processed
+
 
 def print_cluster_information(filenames, kmeans_labels, true_labels):
-    # Mapping of cluster labels to letters
-    cluster_mapping = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J',
-                       10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S',
-                       19: 'T', 20: 'U', 21: 'V', 22: 'W', 23: 'X', 24: 'Y', 25: 'Z'}
+    num_clusters = np.max(kmeans_labels) + 1
 
-    for filename, predicted_label, true_label in zip(filenames, kmeans_labels, true_labels):
-        predicted_letter = cluster_mapping.get(predicted_label, '?')
-        print(f"{filename} is in cluster {predicted_label} ({predicted_letter}), true label: {true_label}")
+    cluster_mapping = {}
+    for i in range(num_clusters):
+        cluster_mapping[i] = guess_cluster_label(kmeans_labels, i, true_labels)
 
+    print_complete_information = input("Do you want to see the complete cluster information (Y/N)? ").upper() == 'Y'
+
+    if print_complete_information:
+        for filename, predicted_label, true_label in zip(filenames, kmeans_labels, true_labels):
+            predicted_letter = cluster_mapping.get(predicted_label, '?')
+            print(f"{filename} is in cluster {predicted_label} ({predicted_letter}), true label: {true_label}")
+    else:
+        print("Cluster information not printed.")
+
+def guess_cluster_label(kmeans_labels, cluster_label, true_labels):
+    cluster_data = [true_label for true_label, predicted_label in zip(true_labels, kmeans_labels) if predicted_label == cluster_label]
+    if cluster_data:
+        most_common_label = max(set(cluster_data), key=cluster_data.count)
+        return most_common_label
+    else:
+        return '?'
+
+
+
+def evaluate_average_peak_time(average_peak_time):
+    print(f"Average peak time: {average_peak_time} seconds")
+
+    if average_peak_time <= 0.1:
+        print("The peak times are well-synchronized.")
+    elif average_peak_time <= 0.3:
+        print("The peak times are reasonably synchronized.")
+    elif average_peak_time <= 0.5:
+        print("The peak times show some synchronization, but there may be variations.")
+    elif average_peak_time <= 1.0:
+        print("The peak times have weak synchronization and significant variations.")
+    else:
+        print("The peak times are poorly synchronized or there may be timing issues.")
 
 
 def analyze_peak_times(directory):
@@ -91,7 +132,7 @@ def analyze_peak_times(directory):
     plt.show()
 
     average_peak_time = np.mean([item for sublist in peak_times_list for item in sublist])
-    print(f"Average peak time: {average_peak_time} seconds")
+    evaluate_average_peak_time(average_peak_time)
 
     plt.figure(figsize=(10, 5))
     plt.plot(combined_loudness)
@@ -99,7 +140,28 @@ def analyze_peak_times(directory):
     plt.xlabel("File index")
     plt.ylabel("Loudness")
     plt.show()
+    evaluate_combined_loudness(combined_loudness)
 
+def evaluate_combined_loudness(combined_loudness):
+    print("Combined Loudness:")
+
+    if len(set(combined_loudness)) == 1:
+        print("The combined loudness is homogeneous across all files.")
+    else:
+        print("The combined loudness varies across files.")
+def evaluate_silhouette_score(silhouette_score):
+    print(f"Silhouette score: {silhouette_score}")
+
+    if silhouette_score >= 0.7:
+        print("The clusters are well-separated and distinct.")
+    elif silhouette_score >= 0.5:
+        print("The clusters are reasonably well-separated.")
+    elif silhouette_score >= 0.3:
+        print("The clusters show some separation, but there may be overlap.")
+    elif silhouette_score >= 0.1:
+        print("The clusters have weak separation and significant overlap.")
+    else:
+        print("The clusters are poorly separated or there may be incorrect assignments.")
 
 def main():
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
@@ -120,7 +182,8 @@ def main():
             kmeans, sil_score = perform_clustering(data, num_clusters)
             plot_clusters(data_2d, kmeans, num_clusters)
 
-            print(f"Silhouette score: {sil_score}")
+            evaluate_silhouette_score(sil_score)
+
             print_cluster_information(filenames, kmeans.labels_, labels)
 
             analyze_peak_times(directory)
