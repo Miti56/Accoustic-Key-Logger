@@ -48,6 +48,16 @@ def get_file_input():
         print("Invalid file path. Please try again.")
 
 
+def get_directory_input():
+    while True:
+        directory_path = input("Enter the path to the directory containing WAV files (or 'quit' to exit): ")
+        if directory_path.lower() == 'quit':
+            return None
+        if os.path.isdir(directory_path):
+            return directory_path
+        print("Invalid directory path. Please try again.")
+
+
 def main():
     # Directory containing the audio files
     directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
@@ -58,11 +68,31 @@ def main():
     model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/model.h5')
 
     while True:
-        file_path = get_file_input()
-        if file_path is None:
+        print("Choose an option:")
+        print("1. Predict a single WAV file")
+        print("2. Predict WAV files in a directory")
+        print("3. Quit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            file_path = get_file_input()
+            if file_path is None:
+                break
+            predicted_key = predict_key_press(file_path, model, le)
+            print(f"The predicted key press for {file_path} is {predicted_key}.")
+        elif choice == '2':
+            directory_path = get_directory_input()
+            if directory_path is None:
+                break
+            for filename in os.listdir(directory_path):
+                if filename.endswith(".wav"):
+                    file_path = os.path.join(directory_path, filename)
+                    predicted_key = predict_key_press(file_path, model, le)
+                    print(f"The predicted key press for {file_path} is {predicted_key}.")
+        elif choice == '3':
             break
-        predicted_key = predict_key_press(file_path, model, le)
-        print(f"The predicted key press for {file_path} is {predicted_key}.")
+        else:
+            print("Invalid choice. Please select a valid option.")
 
 
 if __name__ == "__main__":
