@@ -210,9 +210,9 @@ def main():
     # Check if the sample rates match
     assert sample_rate_pattern == sample_rate_target, "Sample rates do not match"
 
-    # Normalize the audio signals
-    pattern = normalize_audio(pattern)
-    target = normalize_audio(target)
+    # # Normalize the audio signals
+    # pattern = normalize_audio(pattern)
+    # target = normalize_audio(target)
 
     # Find the peak indices and times
     peak_indices, peak_times = find_peak_indices(pattern, target, sample_rate_target)
