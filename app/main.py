@@ -92,7 +92,7 @@ def display_additional_information():
     print("- Neural Network Model: This model utilizes a neural network architecture to analyze the audio signals.")
     print("  It learns patterns and features from the input data through training and can classify audio based on the "
           "learned patterns.")
-    print("======================{Color.END}")
+    print("======================")
 
 
 def display_additional_information2():
@@ -106,10 +106,38 @@ def display_additional_information2():
     print("- Neural Network Model: This model utilizes a neural network architecture to analyze the audio signals.")
     print("  It learns patterns and features from the input data through training and can classify audio based on the "
           "learned patterns.")
-    print("======================{Color.END}")
+    print("======================")
 
 
 def main():
+    print(f"{Color.BLUE}====================")
+    print("Welcome to the Keyboard Listening App!")
+    print("This app allows you to analyze and classify audio recordings of keyboard sounds.")
+    print("Here is a brief overview of the steps involved:")
+
+    print(f"{Color.BLUE}1. Recording:")
+    print("   - You will be prompted to ensure you are in a quiet space to start the recording.")
+    print("   - If you have already recorded audio files, you can choose to continue with them.")
+    print("   - Otherwise, you can use the provided 'record.py' tool to record keyboard sounds.")
+
+    print(f"{Color.BLUE}2. Data Visualization:")
+    print("   - You will have the option to visualize the recorded data.")
+    print("   - The 'DataVisualisation' module will be used to perform data analysis.")
+
+    print(f"{Color.BLUE}3. Model Creation:")
+    print("   - You will be asked to choose between two models: Cross-Correlation (CC) or Neural Network (NN).")
+    print("   - The chosen model will be trained using the recorded data.")
+    print("   - The 'modelCC.py' and 'modelML.py' modules will be used to create and train the models.")
+
+    print(f"{Color.BLUE}4. Model Visualization:")
+    print("   - You will have the option to visualize the trained model.")
+    print("   - The 'modelVisualisation' module will be used to analyze and visualize the model.")
+
+    print(f"{Color.BLUE}5. Testing:")
+    print("   - You will have the option to perform different tests on the model.")
+    print(
+        "   - Tests can be conducted using the 'liveModel.py', 'modelCCTest.py', 'modelMLTest.py', or 'testLong.py' modules.")
+
     print(f"{Color.BLUE}====================")
     print("Welcome to the UI!")
 
