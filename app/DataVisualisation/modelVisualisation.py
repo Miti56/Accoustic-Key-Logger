@@ -16,10 +16,10 @@ def main():
     with open('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history.pkl', 'rb') as f:
         history = pickle.load(f)
 
-    # 1. Model Summary
+    # Model Summary
     model.summary()
 
-    # 2. Loss and Accuracy during Training
+    # Loss and Accuracy during Training
     plt.figure(figsize=(14,4))
     plt.subplot(1,2,1)
     plt.plot(history['loss'], label='Training Loss')
@@ -35,7 +35,7 @@ def main():
 
     plt.show()
 
-    # 3. Confusion Matrix
+    # Confusion Matrix
     predictions = np.argmax(model.predict(data_test), axis=1)
     cm = confusion_matrix(labels_test, predictions)
     plt.figure(figsize=(8,8))
@@ -43,11 +43,11 @@ def main():
     plt.title('Confusion Matrix')
     plt.show()
 
-    # 4. Classification Report
+    # Classification Report
     report = classification_report(labels_test, predictions)
     print(report)
 
-    # 5. ROC and AUC
+    # ROC and AUC
     lb = LabelBinarizer()
     lb.fit(labels_test)
     labels_test_bin = lb.transform(labels_test)
@@ -74,14 +74,14 @@ def main():
     plt.legend(loc="lower right")
     plt.show()
 
-    # 6. Model Weights Visualization
+    # Model Weights Visualization
     weights = model.layers[0].get_weights()[0]
     plt.figure(figsize=(10,5))
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
 
-    # 7. Model Architecture Diagram
+    # Model Architecture Diagram
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 if __name__ == "__main__":

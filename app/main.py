@@ -136,7 +136,8 @@ def main():
     print(f"{Color.BLUE}5. Testing:")
     print("   - You will have the option to perform different tests on the model.")
     print(
-        "   - Tests can be conducted using the 'liveModel.py', 'modelCCTest.py', 'modelMLTest.py', or 'testLong.py' modules.")
+        "- Tests can be conducted using the 'liveModel.py', 'modelCCTest.py', 'modelMLTest.py', or 'testLong.py' "
+        "modules.")
 
     print(f"{Color.BLUE}====================")
     print("Welcome to the UI!")
