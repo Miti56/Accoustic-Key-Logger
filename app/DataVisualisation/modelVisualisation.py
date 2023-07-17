@@ -1,13 +1,13 @@
 from tensorflow.keras.models import load_model
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from tensorflow.keras.utils import plot_model
 import pickle
 from app.model.modelML import data_test, labels_test
+
 
 def main():
     # Load the trained model
@@ -20,14 +20,14 @@ def main():
     model.summary()
 
     # Loss and Accuracy during Training
-    plt.figure(figsize=(14,4))
-    plt.subplot(1,2,1)
+    plt.figure(figsize=(14, 4))
+    plt.subplot(1, 2, 1)
     plt.plot(history['loss'], label='Training Loss')
     plt.plot(history['val_loss'], label='Validation Loss')
     plt.legend()
     plt.title('Losses')
 
-    plt.subplot(1,2,2)
+    plt.subplot(1, 2, 2)
     plt.plot(history['accuracy'], label='Training Accuracy')
     plt.plot(history['val_accuracy'], label='Validation Accuracy')
     plt.legend()
@@ -38,13 +38,13 @@ def main():
     # Confusion Matrix
     predictions = np.argmax(model.predict(data_test), axis=1)
     cm = confusion_matrix(labels_test, predictions)
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(8, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
     plt.title('Confusion Matrix')
     plt.show()
 
     # Classification Report
-    report = classification_report(labels_test, predictions)
+    report = classification_report(labels_test, predictions, zero_division=1)
     print(report)
 
     # ROC and AUC
@@ -76,13 +76,34 @@ def main():
 
     # Model Weights Visualization
     weights = model.layers[0].get_weights()[0]
-    plt.figure(figsize=(10,5))
+    plt.figure(figsize=(10, 5))
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
 
+    # Model Weights Visualization
+    weights = model.layers[1].get_weights()[0]
+    plt.figure(figsize=(10, 5))
+    sns.heatmap(weights, cmap='viridis')
+    plt.title('Weights of the First Layer')
+    plt.show()
+
+    weights = model.layers[2].get_weights()[0]
+    plt.figure(figsize=(10, 5))
+    sns.heatmap(weights, cmap='viridis')
+    plt.title('Weights of the First Layer')
+    plt.show()
+
+    weights = model.layers[3].get_weights()[0]
+    plt.figure(figsize=(10, 5))
+    sns.heatmap(weights, cmap='viridis')
+    plt.title('Weights of the First Layer')
+    plt.show()
+
+
     # Model Architecture Diagram
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+
 
 if __name__ == "__main__":
     main()
