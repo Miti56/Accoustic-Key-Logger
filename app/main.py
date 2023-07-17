@@ -80,6 +80,12 @@ def run_testLong():
     except subprocess.CalledProcessError:
         print("Error running the original program.")
 
+def run_fakeKeys():
+    try:
+        subprocess.run(['python3', 'utils/keyboardSoundEmulation.py'], check=True)
+    except subprocess.CalledProcessError:
+        print("Error running the original program.")
+
 
 def display_additional_information():
     print(f"{Color.HEADER}======================")
@@ -248,10 +254,28 @@ def main():
             # Display additional information
             display_additional_information2()
         elif q7 == 'Q':
-            sys.exit()
+            break
+
         else:
             # Invalid input
             print("Invalid input. Please select a valid option.")
+
+    print("The program has finished running, if you wish, you can replace your keystroke sounds by fake ones ("
+          "Press H to learn more)")
+
+    q8 = display_prompt("Run the Keyboard replacer sound").upper() == 'Y'
+
+    if q8:
+        print(f"{Color.GREEN}====================")
+        # Run the original program
+        run_fakeKeys()
+        print("Model analysis performed.")
+
+    else:
+        print(f"{Color.YELLOW}====================")
+        print("Ending the program...")
+        time.sleep(3)
+
 
 
 if __name__ == "__main__":
