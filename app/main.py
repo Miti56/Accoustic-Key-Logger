@@ -92,7 +92,7 @@ def display_additional_information():
     print("- Neural Network Model: This model utilizes a neural network architecture to analyze the audio signals.")
     print("  It learns patterns and features from the input data through training and can classify audio based on the "
           "learned patterns.")
-    print("======================")
+    print(f"======================{Color.END}")
 
 
 def display_additional_information2():
@@ -106,7 +106,7 @@ def display_additional_information2():
     print("- Neural Network Model: This model utilizes a neural network architecture to analyze the audio signals.")
     print("  It learns patterns and features from the input data through training and can classify audio based on the "
           "learned patterns.")
-    print("======================")
+    print(f"======================{Color.END}")
 
 
 def main():
