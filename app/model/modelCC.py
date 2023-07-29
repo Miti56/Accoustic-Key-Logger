@@ -12,22 +12,17 @@ def load_audio(file_path):
 def predict_label(test_data, data, labels):
     # Calculate the cross correlation between the test sample and all samples
     cross_correlations = [correlate(test_data, d) for d in data]
-
-    # Get the indices that sort the cross correlations by their maximum values
+    # Sort the cross correlations by their maximum values
     sorted_indices = np.argsort([np.max(c) for c in cross_correlations])
-
-    # Predict the label of the test sample to be the same as the label of the sample with the highest cross correlation
+    # Predict the label
     predicted_label = labels[sorted_indices[-1]]
-
     return predicted_label
 
 def predict_wav_file(filename, data, labels, le):
     # Load the .wav file
     audio, sample_rate = load_audio(filename)
-
     # Predict the label
     predicted_label = predict_label(audio, data, labels)
-
     print(f"The predicted key press for {filename} is {le.inverse_transform([predicted_label])[0]}.")
 
 
@@ -38,15 +33,12 @@ def accuracy( data, labels):
         predicted_label = predict_label(data[i])
         if predicted_label == labels[i]:
             correct_predictions += 1
-
+    # Show accuracy of model
     accuracy = correct_predictions / len(data)
     print(f"Accuracy on entire data: {accuracy}")
 
 def main():
-    # Default path
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-
-    # Prompt the user for input
     use_default = input("Do you want to use the default directory? (Y/N): ").upper() == 'Y'
 
     if use_default:
@@ -64,7 +56,6 @@ def main():
 
             # Extract the label from the filename
             label = filename.split('_')[0]  # adjust this based on how your files are named
-
             data.append(audio)
             labels.append(label)
 
@@ -76,7 +67,7 @@ def main():
     le = LabelEncoder()
     labels = le.fit_transform(labels)
 
-    # Save the cross-correlation model and label encoder using pickle
+    # Save the cross-correlation model and labels
     with open('cross_correlation_model.pkl', 'wb') as f:
         pickle.dump({'dataCC': data, 'labelsCC': labels, 'label_encoderCC': le}, f)
 

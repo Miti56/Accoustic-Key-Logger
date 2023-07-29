@@ -75,14 +75,14 @@ def print_cluster_information(filenames, kmeans_labels, true_labels):
     for i in range(num_clusters):
         cluster_mapping[i] = guess_cluster_label(kmeans_labels, i, true_labels)
 
-    print_complete_information = input("Do you want to see the complete cluster information (Y/N)? ").upper() == 'Y'
+    print_complete_information = input("Do you want to see the complete cluster information (Y/N)?").upper() == 'Y'
 
     if print_complete_information:
         for filename, predicted_label, true_label in zip(filenames, kmeans_labels, true_labels):
             predicted_letter = cluster_mapping.get(predicted_label, '?')
             print(f"{filename} is in cluster {predicted_label} ({predicted_letter}), true label: {true_label}")
     else:
-        print("Cluster information not printed.")
+        print("Cluster information not printed")
 
 def guess_cluster_label(kmeans_labels, cluster_label, true_labels):
     cluster_data = [true_label for true_label, predicted_label in zip(true_labels, kmeans_labels) if predicted_label == cluster_label]
@@ -98,15 +98,15 @@ def evaluate_average_peak_time(average_peak_time):
     print(f"Average peak time: {average_peak_time} seconds")
 
     if average_peak_time <= 0.1:
-        print("The peak times are well-synchronized.")
+        print("The peak times are well-synchronized")
     elif average_peak_time <= 0.3:
-        print("The peak times are reasonably synchronized.")
+        print("The peak times are reasonably synchronized")
     elif average_peak_time <= 0.5:
-        print("The peak times show some synchronization, but there may be variations.")
+        print("The peak times show some synchronization, but there may be variations")
     elif average_peak_time <= 1.0:
-        print("The peak times have weak synchronization and significant variations.")
+        print("The peak times have weak synchronization and significant variations")
     else:
-        print("The peak times are poorly synchronized or there may be timing issues.")
+        print("The peak times are poorly synchronized or there may be timing issues")
 
 
 def analyze_peak_times(directory):
@@ -128,7 +128,7 @@ def analyze_peak_times(directory):
     plt.figure(figsize=(10, 5))
     plt.boxplot(peak_times_list, vert=False)
     plt.title("Peak times of each .wav file")
-    plt.xlabel("Time (s)")
+    plt.xlabel("Time (ms)")
     plt.show()
 
     average_peak_time = np.mean([item for sublist in peak_times_list for item in sublist])
@@ -146,33 +146,33 @@ def evaluate_combined_loudness(combined_loudness):
     print("Combined Loudness:")
 
     if len(set(combined_loudness)) == 1:
-        print("The combined loudness is homogeneous across all files.")
+        print("The combined loudness is homogeneous across all files")
     else:
-        print("The combined loudness varies across files.")
+        print("The combined loudness varies across files")
 def evaluate_silhouette_score(silhouette_score):
     print(f"Silhouette score: {silhouette_score}")
 
     if silhouette_score >= 0.7:
-        print("The clusters are well-separated and distinct.")
+        print("The clusters are well-separated and distinct")
     elif silhouette_score >= 0.5:
-        print("The clusters are reasonably well-separated.")
+        print("The clusters are reasonably well-separated")
     elif silhouette_score >= 0.3:
-        print("The clusters show some separation, but there may be overlap.")
+        print("The clusters show some separation, but there may be overlap")
     elif silhouette_score >= 0.1:
-        print("The clusters have weak separation and significant overlap.")
+        print("The clusters have weak separation and significant overlap")
     else:
-        print("The clusters are poorly separated or there may be incorrect assignments.")
+        print("The clusters are poorly separated or there may be incorrect assignments")
 
 def main():
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 
     while True:
-        use_default = input("Do you want to use the default directory (Y/N)? ").upper() == 'Y'
+        use_default = input("Do you want to use the default directory (Y/N)?").upper() == 'Y'
 
         if use_default:
             directory = default_directory
         else:
-            directory = input("Enter the directory path: ")
+            directory = input("Enter the directory path:")
 
         try:
             data, filenames, labels = load_and_process_data(directory)
@@ -190,7 +190,7 @@ def main():
 
             break  # Break out of the loop if the directory processing is successful
         except FileNotFoundError:
-            print("Directory not found. Please make sure the directory exists and try again.")
+            print("Directory not found. Please make sure the directory exists and try again")
 
 
 

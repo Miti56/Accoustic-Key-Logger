@@ -250,7 +250,7 @@ def main():
             print(f"The predicted key press for {filename} is {predicted_key}.")
 
 
-# Perform train-test split outside the main function
+# Needed outside
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
 data, labels, le = load_and_process_data(directory)
 input_shape = (data.shape[1],)
