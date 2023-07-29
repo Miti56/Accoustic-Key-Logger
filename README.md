@@ -7,7 +7,7 @@
 
 ## Overview
 
-This Python program allows you to perform keyboard acoustic analysis. By using sophisticated audio processing algorithms, our program can detect key presses simply based on the sound. This has potential applications in accessibility, security, and user interface development.
+This Python program allows you to perform keyboard acoustic analysis. By using sophisticated audio processing algorithms, this program can detect key presses simply based on the sound. This has potential applications in accessibility, security, and user interface development.
 
 Through an easy-to-use graphical user interface (GUI), users can simply upload their audio recordings of typing and see the detected key presses.
 
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 Once the installation is completed, you can run the program with:
 
 ```bash
-python main.py
+python3 main.py
 ```
 
 ## Dependencies
