@@ -112,54 +112,59 @@ def listen_and_predict(model, le, device, duration):
     frames = int(duration * sample_rate)
 
     # Start recording
-    with sd.InputStream(device=device, channels=1, callback=callback,
-                        blocksize=frames, samplerate=48000):
+    with sd.InputStream(device=device, channels=1, callback=callback, blocksize=frames, samplerate=sample_rate):
         print('Listening...')
+        audio_chunk = None  # Initialize audio_chunk variable
         while True:
-            # Get the next chunk of audio
-            audio_chunk = q.get().flatten()
+            # Get the next chunk of audio if available
+            if not q.empty():
+                audio_chunk = q.get().flatten()
 
-            # Add the chunk to the buffer
-            buffer.extend(audio_chunk)
+            # Check if audio_chunk is not None (audio data is available)
+            if audio_chunk is not None:
 
-            # Check if the loudness exceeds the threshold
-            volume = np.max(np.abs(audio_chunk))
-            if volume > volume_threshold:
-                # We have detected a key press
+                # Add the chunk to the buffer
+                buffer.extend(audio_chunk)
 
-                # Get the audio from 1 second before and 1 second after the threshold was reached
-                audio_to_send = list(buffer) + [q.get().flatten() for _ in range(buffer_frames)]
+                # # Check if the loudness exceeds the threshold
+                # volume = np.max(np.abs(audio_chunk))
+                volume = 1
+                if volume > 0:
+                    # We have detected a key press
 
-                # Convert the audio file into MFCCs
-                mfccs = librosa.feature.mfcc(y=np.array(audio_to_send), sr=sample_rate, n_mfcc=40)
-                mfccs_processed = np.mean(mfccs.T,axis=0)
+                    # Get the audio from 1 second before and 1 second after the threshold was reached
+                    audio_to_send = list(buffer) + [q.get().flatten() for _ in range(buffer_frames)]
 
-                # Reshape the data for prediction
-                mfccs_processed = mfccs_processed.reshape(1, -1)
+                    # Convert the audio file into MFCCs
+                    mfccs = librosa.feature.mfcc(y=np.array(audio_to_send), sr=sample_rate, n_mfcc=40)
+                    mfccs_processed = np.mean(mfccs.T,axis=0)
 
-                # Use the model to predict the label for the new audio file
-                prediction = model.predict(mfccs_processed)
+                    # Reshape the data for prediction
+                    mfccs_processed = mfccs_processed.reshape(1, -1)
 
-                # Get the index of the highest predicted class
-                predicted_index = np.argmax(prediction[0])
+                    # Use the model to predict the label for the new audio file
+                    prediction = model.predict(mfccs_processed)
 
-                # Convert the predicted index to its corresponding label
-                predicted_label = le.inverse_transform([predicted_index])
+                    # Get the index of the highest predicted class
+                    predicted_index = np.argmax(prediction[0])
 
-                print(f"The predicted key press is {predicted_label[0]}.")
+                    # Convert the predicted index to its corresponding label
+                    predicted_label = le.inverse_transform([predicted_index])
 
-                # Print out all the classes and their probabilities
-                sorted_indices = np.argsort(prediction[0])[::-1]
-                print("All classes and their probabilities:")
-                for idx in sorted_indices:
-                    print(f"{le.inverse_transform([idx])[0]}: {prediction[0][idx]}")
+                    print(f"The predicted key press is {predicted_label[0]}.")
 
-                # Clear the buffer
-                buffer.clear()
+                    # Print out all the classes and their probabilities
+                    sorted_indices = np.argsort(prediction[0])[::-1]
+                    print("All classes and their probabilities:")
+                    for idx in sorted_indices:
+                        print(f"{le.inverse_transform([idx])[0]}: {prediction[0][idx]}")
 
-            else:
-                # No key press detected, continue listening
-                continue
+                    # Clear the buffer
+                    buffer.clear()
+
+                else:
+                    # No key press detected, continue listening
+                    continue
 
 
 
