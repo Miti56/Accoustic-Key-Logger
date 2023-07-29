@@ -3,7 +3,6 @@ import sys
 import time
 
 
-# ANSI escape sequences for text color
 class Color:
     HEADER = '\033[95m'
     BLUE = '\033[94m'
@@ -80,6 +79,7 @@ def run_testLong():
     except subprocess.CalledProcessError:
         print("Error running the original program.")
 
+
 def run_fakeKeys():
     try:
         subprocess.run(['python3', 'utils/keyboardSoundEmulation.py'], check=True)
@@ -146,7 +146,7 @@ def main():
         "modules.")
 
     print(f"{Color.BLUE}====================")
-    print("Welcome to the UI!")
+    print("Welcome!")
 
     q1 = display_prompt("Are you in a quiet space to start the recording? ").upper() == 'Y'
 
@@ -275,7 +275,6 @@ def main():
         print(f"{Color.YELLOW}====================")
         print("Ending the program...")
         time.sleep(3)
-
 
 
 if __name__ == "__main__":
