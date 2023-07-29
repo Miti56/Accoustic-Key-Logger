@@ -3,7 +3,6 @@ import librosa.display
 import matplotlib.pyplot as plt
 
 def plot_waveform_mfcc_chrom_contrast_tonnetz(waveform, sample_rate):
-    duration = len(waveform) / sample_rate
     time = librosa.times_like(waveform, sr=sample_rate)
 
     # Compute MFCCs
@@ -28,7 +27,7 @@ def plot_waveform_mfcc_chrom_contrast_tonnetz(waveform, sample_rate):
     plt.title('Waveform')
     plt.grid(True)
 
-    # Find the peak and plot a line to delimit it
+    # Find the peak
     peak_idx = waveform.argmax()
     peak_time = time[peak_idx]
     peak_amplitude = waveform[peak_idx]
@@ -52,7 +51,6 @@ def plot_waveform_mfcc_chrom_contrast_tonnetz(waveform, sample_rate):
     plt.ylabel('Chromagram')
     plt.title('Chromagram')
 
-    # Plot Spectral Contrast
     plt.subplot(2, 2, 4)
     librosa.display.specshow(contrast, x_axis='time', sr=sample_rate, cmap='coolwarm')
     plt.colorbar()
@@ -60,19 +58,13 @@ def plot_waveform_mfcc_chrom_contrast_tonnetz(waveform, sample_rate):
     plt.ylabel('Spectral Contrast')
     plt.title('Spectral Contrast')
 
-    # Add title and adjust layout
     plt.suptitle('Waveform, MFCCs, Chromagram, and Spectral Contrast', fontsize=16)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
 
 def main():
-    # Replace 'path/to/your/file.wav' with the actual path of your WAV file
     wav_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized/a_2621992.wav'
-
-    # Load the WAV file using librosa
     waveform, sample_rate = librosa.load(wav_file, sr=48000)
-
-    # Plot the waveform, MFCCs, Chromagram, and Spectral Contrast
     plot_waveform_mfcc_chrom_contrast_tonnetz(waveform, sample_rate)
 
 if __name__ == "__main__":

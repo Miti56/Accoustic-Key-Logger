@@ -26,14 +26,10 @@ def on_release(key):
 def play_keyboard_sounds(sound_folder, sound_files):
     # Initialize pygame mixer
     pygame.mixer.init()
-
-    # Create a partial function with the additional arguments
     on_press_partial = partial(on_press, sound_folder, sound_files)
-
     # Create a keyboard listener
     listener = keyboard.Listener(on_press=on_press_partial, on_release=on_release)
     listener.start()
-
     # Keep the main thread running while the listener is active
     listener.join()
 

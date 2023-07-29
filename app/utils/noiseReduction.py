@@ -35,55 +35,32 @@ def reduce_noise(data, sr):
 
 
 def main():
-    # Default paths
     default_input_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
     default_output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-
-    # Prompt the user for input and output paths
     use_default = input("Do you want to use the default settings? (Y/N): ").upper() == 'Y'
-
     if use_default:
         input_directory = default_input_directory
         output_directory = default_output_directory
     else:
         input_directory = input("Enter the input directory path: ")
         output_directory = input("Enter the output directory path: ")
-
-    # Backup the data before performing noise reduction
     backup_option = input("Do you want to backup the data before processing? (Y/N): ").upper() == 'Y'
     if backup_option:
         buckupData.main()
         print("Data backup complete.")
-
-    # Create the output directory if it doesn't exist
     os.makedirs(output_directory, exist_ok=True)
-
-    # Traverse through all files in the input directory
     for filename in os.listdir(input_directory):
         if filename.endswith(".wav"):
             file_path = os.path.join(input_directory, filename)
-
-            # Load the .wav file
             rate, data = load_audio(file_path)
-
-            # Create spectrogram before noise reduction
             frequencies, times, Sxx = create_spectrogram(data, rate)
             plot_spectrogram(times, frequencies, Sxx, "Spectrogram before noise reduction: " + filename)
-
-            # Reduce noise
             reduced_noise = reduce_noise(data, rate)
-
-            # Save noise reduced signal to a file
             output_file_path = os.path.join(output_directory, "reduced_" + filename)
             save_audio(output_file_path, rate, reduced_noise)
-
-            # Load the noise reduced audio file
             rate2, data2 = load_audio(output_file_path)
-
-            # Create spectrogram after noise reduction
             frequencies2, times2, Sxx2 = create_spectrogram(data2, rate2)
             plot_spectrogram(times2, frequencies2, Sxx2, "Spectrogram after noise reduction: " + filename)
-
     print("Noise reduction complete. The noise reduced signals were saved in the output directory.")
 
 

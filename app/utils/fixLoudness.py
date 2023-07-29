@@ -6,7 +6,6 @@ import soundfile as sf
 def calculate_average_loudness(directory):
     loudness_sum = 0.0
     file_count = 0
-
     for filename in os.listdir(directory):
         if filename.endswith(".wav"):
             file_path = os.path.join(directory, filename)
@@ -14,7 +13,6 @@ def calculate_average_loudness(directory):
             loudness = np.mean(np.abs(audio))
             loudness_sum += loudness
             file_count += 1
-
     average_loudness = loudness_sum / file_count
     return average_loudness
 
