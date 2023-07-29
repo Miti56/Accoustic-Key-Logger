@@ -22,7 +22,7 @@ Through an easy-to-use graphical user interface (GUI), users can simply upload t
 Clone the repository to your local machine, navigate to the cloned directory, and install the required dependencies:
 
 ```bash
-git clone https://github.com/username/repo.git
+git clone NAME REPO
 cd repo
 pip install -r requirements.txt
 ```
