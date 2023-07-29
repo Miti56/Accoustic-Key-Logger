@@ -30,6 +30,18 @@ def predict_wav_file(filename, data, labels, le):
 
     print(f"The predicted key press for {filename} is {le.inverse_transform([predicted_label])[0]}.")
 
+
+def accuracy( data, labels):
+    # Evaluate the algorithm on the entire data
+    correct_predictions = 0
+    for i in range(len(data)):
+        predicted_label = predict_label(data[i])
+        if predicted_label == labels[i]:
+            correct_predictions += 1
+
+    accuracy = correct_predictions / len(data)
+    print(f"Accuracy on entire data: {accuracy}")
+
 def main():
     # Default path
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
