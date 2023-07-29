@@ -1,7 +1,7 @@
 import os
 import librosa
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
@@ -66,6 +66,49 @@ def compile_and_train(model, train_data, train_labels, test_data, test_labels, e
                         validation_data=(test_data, test_labels), callbacks=[early_stopping])
 
     return history
+
+
+
+def compile_and_train_k_fold(model, data, labels, k=5, epochs=200, batch_size=32):
+    # Initialize lists to store training and validation metrics for each fold
+    train_losses = []
+    train_accuracies = []
+    val_losses = []
+    val_accuracies = []
+
+    # Compile the model
+    model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    # Perform k-fold cross-validation
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    accuracies = []
+    for train_index, test_index in kf.split(data):
+        train_data, test_data = data[train_index], data[test_index]
+        train_labels, test_labels = labels[train_index], labels[test_index]
+
+        # Define early stopping callback
+        early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
+
+        # Train the model and get the training history
+        history = model.fit(train_data, train_labels, epochs=epochs, batch_size=batch_size,
+                            validation_data=(test_data, test_labels), verbose=0,
+                            callbacks=[early_stopping])
+
+        # Accumulate training and validation metrics for each fold
+        train_losses.append(history.history['loss'])
+        train_accuracies.append(history.history['accuracy'])
+        val_losses.append(history.history['val_loss'])
+        val_accuracies.append(history.history['val_accuracy'])
+        accuracies.append(history.history['val_accuracy'][-1])
+
+    mean_accuracy = np.mean(accuracies)
+    print(f"Mean validation accuracy with {k}-fold cross-validation: {mean_accuracy:.4f}")
+
+    # Save the history for each fold
+    save_history(history, 'history_k_fold.pkl')
+
+    return model
+
 
 
 def save_history(history, filename='history.pkl'):
@@ -141,15 +184,43 @@ def main():
 
     model = build_model(input_shape, num_classes)
 
-    data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
+    # Ask the user for the choice of train-test split or k-fold cross-validation
+    choice = input("Enter 'T' for train-test split or 'K' for k-fold cross-validation: ").upper()
 
-    history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
+    if choice == 'T':
+        data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2,
+                                                                            random_state=42)
+        history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
+        evaluate_model(model, data_test, labels_test)
+        model.save('modelTT.h5')
+        save_history(history, 'history_train_test_split.pkl')
+    elif choice == 'K':
+        k = int(input("Enter the number of folds for k-fold cross-validation: "))
+        model_with_k_fold = compile_and_train_k_fold(model, data, labels, k=k)
+        model_with_k_fold.save('modelKF.h5')
+    else:
+        print("Invalid choice. Please enter 'T' or 'K'.")
 
-    save_history(history)
-
-    evaluate_model(model, data_test, labels_test)
-
-    model.save('model.h5')
+        # # Directory containing the audio files
+        # directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
+        #
+        # data, labels, le = load_and_process_data(directory)
+        #
+        # input_shape = (data.shape[1],)
+        # num_classes = len(np.unique(labels))
+        #
+        # model = build_model(input_shape, num_classes)
+        #
+        # data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2,
+        #                                                                     random_state=42)
+        #
+        # history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
+        #
+        # save_history(history)
+        #
+        # evaluate_model(model, data_test, labels_test)
+        #
+        # model.save('model.h5')
 
     # Testing
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
