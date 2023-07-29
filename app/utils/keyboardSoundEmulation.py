@@ -4,20 +4,24 @@ import pygame
 from pynput import keyboard
 from functools import partial
 
+
 def play_random_sound(sound_folder, sound_files):
     sound_file = random.choice(sound_files)
     sound_path = os.path.join(sound_folder, sound_file)
     sound = pygame.mixer.Sound(sound_path)
     sound.play()
 
+
 def on_press(sound_folder, sound_files, key):
     # Play a random sound when a key is pressed
     play_random_sound(sound_folder, sound_files)
+
 
 def on_release(key):
     # Stop the listener
     if key == keyboard.Key.esc:
         return False
+
 
 def play_keyboard_sounds(sound_folder, sound_files):
     # Initialize pygame mixer
@@ -33,7 +37,8 @@ def play_keyboard_sounds(sound_folder, sound_files):
     # Keep the main thread running while the listener is active
     listener.join()
 
-if __name__ == "__main__":
+
+def main():
     # Folder path containing the keyboard sound files
     sound_folder = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/utils/fakeKeyboardSounds'
 
@@ -60,3 +65,7 @@ if __name__ == "__main__":
 
             # Call the function to play keyboard sounds
             play_keyboard_sounds(sound_folder, random_sound_files)
+
+
+if __name__ == "__main__":
+    main()
