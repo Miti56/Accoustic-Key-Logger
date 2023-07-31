@@ -251,7 +251,7 @@ def main():
 
 
 # Needed outside
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
 data, labels, le = load_and_process_data(directory)
 input_shape = (data.shape[1],)
 num_classes = len(np.unique(labels))

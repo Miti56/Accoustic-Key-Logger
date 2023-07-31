@@ -211,7 +211,7 @@ def main():
 
     # Pipeline Record
     device = select_microphone()
-    record_duration = input("Enter the recording duration in seconds: ")
+    record_duration = get_valid_duration()
     keypresses = record_audio(fs=48000, seconds=record_duration, channels=1, device=device)
     create_audio_clips(keypresses, output_directory)
     preprocess_audio(output_directory, desired_length=48000)
@@ -253,6 +253,17 @@ def delete_existing_files(directory):
     else:
         print("No files found in the data folder")
 
+def get_valid_duration():
+    while True:
+        duration_input = input("Enter the recording duration in seconds: ")
+        try:
+            duration = int(duration_input)
+            if duration > 0:
+                return duration
+            else:
+                print("Please enter a positive number.")
+        except ValueError:
+            print("Please enter a valid number.")
 
 if __name__ == "__main__":
     main()

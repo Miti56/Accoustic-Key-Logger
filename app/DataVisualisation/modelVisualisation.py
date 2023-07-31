@@ -10,10 +10,20 @@ from app.model.modelML import data_test, labels_test
 
 
 def main():
+    # Ask the user to choose between TT or KFOLD
+    use_kfold = input("Do you want to analyse TT or K-Fold? (T/K): ").upper() == 'T'
+
+    if use_kfold:
+        model_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelTT.h5'
+        history_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history_train_test_split.pkl'
+    else:
+        model_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelKF.h5'
+        history_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history_k_fold.pkl'
+
     # Load the trained model
-    model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/model.h5')
-    # Load the history object from a file
-    with open('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history.pkl', 'rb') as f:
+    model = load_model(model_path)
+
+    with open(history_path, 'rb') as f:
         history = pickle.load(f)
 
     # Model Summary
