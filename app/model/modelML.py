@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping
+import matplotlib.pyplot as plt
 
 
 def load_and_process_data(directory):
@@ -137,7 +138,6 @@ def predict_key_press(filename, model, le):
     # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
     # tonnetz_processed = np.mean(tonnetz.T, axis=0)
     #
-    # # Concatenate the features together
     # combined_features = np.concatenate(
     #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed], axis=1)
     # # Reshape the data for prediction
@@ -173,18 +173,34 @@ def get_num_files_input():
         print("Invalid input. Please enter a number.")
 
 
+# def perform_k_fold_training(data, labels, num_classes, folds_list, epochs=200, batch_size=32):
+#     fold_accuracies = {}
+#     for k in folds_list:
+#         print(f"Training with {k}-fold cross-validation...")
+#         model = build_model(input_shape, num_classes)
+#         model_with_k_fold = compile_and_train_k_fold(model, data, labels, k=k, epochs=epochs, batch_size=batch_size)
+#         mean_accuracy = np.mean(model_with_k_fold.history.history['val_accuracy'])
+#         print(f"Mean validation accuracy with {k}-fold cross-validation: {mean_accuracy:.4f}")
+#         fold_accuracies[k] = mean_accuracy
+#
+#     return fold_accuracies
+#
+# def plot_fold_accuracies(fold_accuracies):
+#     plt.figure(figsize=(8, 6))
+#     plt.plot(list(fold_accuracies.keys()), list(fold_accuracies.values()), marker='o')
+#     plt.xlabel('Number of Folds')
+#     plt.ylabel('Mean Validation Accuracy')
+#     plt.title('Mean Validation Accuracy vs. Number of Folds')
+#     plt.grid(True)
+#     plt.show()
+
+
 def main():
-    # Directory containing the audio files
     directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
-
     data, labels, le = load_and_process_data(directory)
-
     input_shape = (data.shape[1],)
     num_classes = len(np.unique(labels))
-
     model = build_model(input_shape, num_classes)
-
-    # Ask the user for the choice of train-test split or k-fold cross-validation
     choice = input("Enter 'T' for train-test split or 'K' for k-fold cross-validation: ").upper()
 
     if choice == 'T':
@@ -201,25 +217,16 @@ def main():
     else:
         print("Invalid choice. Please enter 'T' or 'K'.")
 
-        # # Directory containing the audio files
         # directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
-        #
         # data, labels, le = load_and_process_data(directory)
-        #
         # input_shape = (data.shape[1],)
         # num_classes = len(np.unique(labels))
-        #
         # model = build_model(input_shape, num_classes)
-        #
         # data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2,
         #                                                                     random_state=42)
-        #
         # history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
-        #
         # save_history(history)
-        #
         # evaluate_model(model, data_test, labels_test)
-        #
         # model.save('model.h5')
 
     # Testing
@@ -234,19 +241,17 @@ def main():
 
     num_files = get_num_files_input()
 
-    # List all the files in the test directory
+    # List all the files in test directory
     test_files = os.listdir(test_directory)
 
-    # Iterate over the test files
+    # Iterate over the files
     for filename in test_files[:num_files]:
         if filename.endswith(".wav"):
             # Get the full path of the test file
             file_path = os.path.join(test_directory, filename)
 
-            # Predict the key press for the test file
+            # Predict the key
             predicted_key = predict_key_press(file_path, model, le)
-
-            # Print the predicted key press for the test file
             print(f"The predicted key press for {filename} is {predicted_key}.")
 
 
@@ -259,3 +264,6 @@ model = build_model(input_shape, num_classes)
 data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 if __name__ == "__main__":
     main()
+    # folds_list = [2, 3, 5, 10, 15,20,25,30,35,40,45,60]
+    # fold_accuracies = perform_k_fold_training(data, labels, num_classes, folds_list)
+    # plot_fold_accuracies(fold_accuracies)
