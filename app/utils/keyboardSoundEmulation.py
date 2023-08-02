@@ -35,17 +35,11 @@ def play_keyboard_sounds(sound_folder, sound_files):
 
 
 def main():
-    # Folder path containing the keyboard sound files
     sound_folder = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/utils/fakeKeyboardSounds'
-
-    # Ask if the user has replaced the sounds in the folder
     replace_sounds = input("Have you replaced the sounds in the folder? (Y/N): ").upper()
 
     if replace_sounds == "Y":
-        # Load all sound files from the folder
         sound_files = os.listdir(sound_folder)
-
-        # Call the function to play keyboard sounds
         play_keyboard_sounds(sound_folder, sound_files)
     else:
         # Use a default folder with random WAV samples
@@ -55,11 +49,8 @@ def main():
         if len(sound_files) < 5:
             print("Insufficient sound files in the default folder.")
         else:
-            # Randomly select 5 sound files from the default folder
             random_sound_files = random.sample(sound_files, 5)
             sound_folder = default_folder
-
-            # Call the function to play keyboard sounds
             play_keyboard_sounds(sound_folder, random_sound_files)
 
 

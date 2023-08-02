@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+import time
 
 
 def load_and_process_data(directory):
@@ -254,6 +255,20 @@ def main():
             predicted_key = predict_key_press(file_path, model, le)
             print(f"The predicted key press for {filename} is {predicted_key}.")
 
+        # TEST
+        data_sizes = list(range(10, len(data) + 1, 10))
+        training_accuracies = []
+        for size in data_sizes:
+            data_train, _, labels_train, _ = train_test_split(data, labels, train_size=size, random_state=42)
+            history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
+            _, accuracy = model.evaluate(data_test, labels_test)
+            training_accuracies.append(accuracy)
+        plt.plot(data_sizes, training_accuracies, marker='o')
+        plt.xlabel('Data Size for Training')
+        plt.ylabel('Test Accuracy')
+        plt.title('Test Accuracy vs. Data Size for Training')
+        plt.grid(True)
+        plt.show()
 
 # Needed outside
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'

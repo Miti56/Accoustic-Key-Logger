@@ -19,16 +19,16 @@ def process_audio(input_folder, output_folder):
             packet_loss_rate = 0.2
             audio = drop_packets(audio, packet_loss_rate)
 
-            # Jitter
-            jitter_max_shift = 100
-            audio = apply_jitter(audio, jitter_max_shift, sample_rate)
-
-            # Codec compression
-            resampled_audio = resample(audio, int(len(audio) * target_sample_rate / sample_rate))
-
-            # Bandwidth
-            target_sample_rate = 8000
-            audio = resample(resampled_audio, int(len(resampled_audio) * target_sample_rate / sample_rate))
+            # # Jitter
+            # jitter_max_shift = 100
+            # audio = apply_jitter(audio, jitter_max_shift, sample_rate)
+            #
+            # # Codec compression
+            # resampled_audio = resample(audio, int(len(audio) * target_sample_rate / sample_rate))
+            #
+            # # Bandwidth
+            # target_sample_rate = 8000
+            # audio = resample(resampled_audio, int(len(resampled_audio) * target_sample_rate / sample_rate))
 
             # Save
             sf.write(output_filepath, audio, target_sample_rate)
@@ -48,7 +48,7 @@ def compress_audio(audio, sample_rate, target_bitrate):
     return np.array(compressed_audio.get_array_of_samples())
 
 if __name__ == "__main__":
-    input_folder = "/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsCut"
+    input_folder = "/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/fakeKeyboardSoundsTEST"
     output_folder = "/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/VoIP"
 
     process_audio(input_folder, output_folder)

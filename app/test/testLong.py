@@ -51,34 +51,18 @@ def get_file_input():
 def main():
     # Directory containing the audio files
     directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/test/dataLong'
-
-    # Load the trained model
-    model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/model.h5')
-
-    # Load the label encoder
+    model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelKF.h5')
     le = LabelEncoder()
     le.classes_ = np.load('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/label_encoder.npy')
-
-    # List all the files in the test directory
     test_files = os.listdir(directory)
-    # Initialize a list to store the predicted keys
     predicted_keys = []
-    # Iterate over the test files
     for filename in test_files:
         if filename.endswith(".wav"):
-            # Get the full path of the test file
             file_path = os.path.join(directory, filename)
-
-            # Predict the key press for the test file
             predicted_key = predict_key_press(file_path, model, le)
-
-            # Store the predicted key
+            # Store predicted key
             predicted_keys.append(predicted_key)
-
-            # # Print the predicted key press for the test file
             # print(f"The predicted key press for {filename} is {predicted_key}.")
-
-    # Combine the predicted keys into a single sentence
     sentence = ' '.join(predicted_keys)
     print("Predicted sentence:", sentence)
 
