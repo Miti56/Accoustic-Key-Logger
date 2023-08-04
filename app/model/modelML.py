@@ -8,6 +8,9 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping
 import matplotlib.pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Reshape
+
 import time
 
 
@@ -47,6 +50,7 @@ def load_and_process_data(directory):
     return data, labels, le
 
 
+
 def build_model(input_shape, num_classes):
     model = Sequential()
     model.add(Dense(256, activation='relu', input_shape=input_shape))
@@ -54,6 +58,27 @@ def build_model(input_shape, num_classes):
     model.add(Dense(64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
     return model
+
+def build_cnn_model(input_shape, num_classes):
+    model = Sequential()
+    model.add(Reshape(target_shape=(input_shape[0], input_shape[1], 1), input_shape=input_shape))
+
+    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Flatten())
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dense(num_classes, activation='softmax'))
+    return model
+
 
 
 def compile_and_train(model, train_data, train_labels, test_data, test_labels, epochs=200, batch_size=32):
@@ -201,7 +226,15 @@ def main():
     data, labels, le = load_and_process_data(directory)
     input_shape = (data.shape[1],)
     num_classes = len(np.unique(labels))
-    model = build_model(input_shape, num_classes)
+
+    model_type = input("Enter 'D' for Dense model or 'C' for CNN model: ").upper()
+    if model_type == 'D':
+        model = build_model(input_shape, num_classes)
+    elif model_type == 'C':
+        model = build_cnn_model(input_shape, num_classes)
+    else:
+        print("Invalid choice. Please enter 'D' or 'C'.")
+
     choice = input("Enter 'T' for train-test split or 'K' for k-fold cross-validation: ").upper()
 
     if choice == 'T':
@@ -279,6 +312,7 @@ model = build_model(input_shape, num_classes)
 data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 if __name__ == "__main__":
     main()
+    # TESTING
     # folds_list = [2, 3, 5, 10, 15,20,25,30,35,40,45,60]
     # fold_accuracies = perform_k_fold_training(data, labels, num_classes, folds_list)
     # plot_fold_accuracies(fold_accuracies)
