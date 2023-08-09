@@ -1,9 +1,8 @@
 import os
 import librosa
 import numpy as np
+from keras.src.layers import Conv1D, MaxPooling1D
 from sklearn.model_selection import train_test_split, KFold
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping
@@ -59,16 +58,17 @@ def build_model(input_shape, num_classes):
     model.add(Dense(num_classes, activation='softmax'))
     return model
 
+
 def build_cnn_model(input_shape, num_classes):
     model = Sequential()
-    model.add(Reshape(target_shape=(input_shape[0], input_shape[1], 1), input_shape=input_shape))
 
-    model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Reshape(target_shape=(input_shape[0], 1), input_shape=input_shape))
+    model.add(Conv1D(32, kernel_size=3, activation='relu'))
+    model.add(MaxPooling1D(pool_size=2))
+    model.add(Conv1D(64, kernel_size=3, activation='relu'))
+    model.add(MaxPooling1D(pool_size=2))
+    model.add(Conv1D(128, kernel_size=3, activation='relu'))
+    model.add(MaxPooling1D(pool_size=2))
 
     model.add(Flatten())
     model.add(Dense(256, activation='relu'))
@@ -77,6 +77,7 @@ def build_cnn_model(input_shape, num_classes):
     model.add(Dropout(0.5))
     model.add(Dense(64, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
+
     return model
 
 
@@ -231,6 +232,7 @@ def main():
     if model_type == 'D':
         model = build_model(input_shape, num_classes)
     elif model_type == 'C':
+        input_shape = (data.shape[1], 1)
         model = build_cnn_model(input_shape, num_classes)
     else:
         print("Invalid choice. Please enter 'D' or 'C'.")
@@ -263,45 +265,45 @@ def main():
         # evaluate_model(model, data_test, labels_test)
         # model.save('model.h5')
 
-    # # Testing
-    # default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
-    # print("To use this option you will need to have previously created unseen data")
-    # use_default = input("Do you want to use the default directory for testing? (Y/N): ").upper() == 'Y'
-    #
-    # if use_default:
-    #     test_directory = default_directory
-    # else:
-    #     test_directory = get_directory_input()
-    #
-    # num_files = get_num_files_input()
-    #
-    # # List all the files in test directory
-    # test_files = os.listdir(test_directory)
-    #
-    # # Iterate over the files
-    # for filename in test_files[:num_files]:
-    #     if filename.endswith(".wav"):
-    #         # Get the full path of the test file
-    #         file_path = os.path.join(test_directory, filename)
-    #
-    #         # Predict the key
-    #         predicted_key = predict_key_press(file_path, model, le)
-    #         print(f"The predicted key press for {filename} is {predicted_key}.")
-    #
-    #     # TEST
-    #     data_sizes = list(range(10, len(data) + 1, 10))
-    #     training_accuracies = []
-    #     for size in data_sizes:
-    #         data_train, _, labels_train, _ = train_test_split(data, labels, train_size=size, random_state=42)
-    #         history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
-    #         _, accuracy = model.evaluate(data_test, labels_test)
-    #         training_accuracies.append(accuracy)
-    #     plt.plot(data_sizes, training_accuracies, marker='o')
-    #     plt.xlabel('Data Size for Training')
-    #     plt.ylabel('Test Accuracy')
-    #     plt.title('Test Accuracy vs. Data Size for Training')
-    #     plt.grid(True)
-    #     plt.show()
+    # Testing
+    default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
+    print("To use this option you will need to have previously created unseen data")
+    use_default = input("Do you want to use the default directory for testing? (Y/N): ").upper() == 'Y'
+
+    if use_default:
+        test_directory = default_directory
+    else:
+        test_directory = get_directory_input()
+
+    num_files = get_num_files_input()
+
+    # List all the files in test directory
+    test_files = os.listdir(test_directory)
+
+    # Iterate over the files
+    for filename in test_files[:num_files]:
+        if filename.endswith(".wav"):
+            # Get the full path of the test file
+            file_path = os.path.join(test_directory, filename)
+
+            # Predict the key
+            predicted_key = predict_key_press(file_path, model, le)
+            print(f"The predicted key press for {filename} is {predicted_key}.")
+
+        # # TEST
+        # data_sizes = list(range(10, len(data) + 1, 10))
+        # training_accuracies = []
+        # for size in data_sizes:
+        #     data_train, _, labels_train, _ = train_test_split(data, labels, train_size=size, random_state=42)
+        #     history = compile_and_train(model, data_train, labels_train, data_test, labels_test)
+        #     _, accuracy = model.evaluate(data_test, labels_test)
+        #     training_accuracies.append(accuracy)
+        # plt.plot(data_sizes, training_accuracies, marker='o')
+        # plt.xlabel('Data Size for Training')
+        # plt.ylabel('Test Accuracy')
+        # plt.title('Test Accuracy vs. Data Size for Training')
+        # plt.grid(True)
+        # plt.show()
 
 # Needed outside
 directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
@@ -312,7 +314,6 @@ model = build_model(input_shape, num_classes)
 data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=42)
 if __name__ == "__main__":
     main()
-    # TESTING
     # folds_list = [2, 3, 5, 10, 15,20,25,30,35,40,45,60]
     # fold_accuracies = perform_k_fold_training(data, labels, num_classes, folds_list)
     # plot_fold_accuracies(fold_accuracies)
