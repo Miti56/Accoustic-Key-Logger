@@ -48,7 +48,6 @@ def record_audio(fs, seconds, channels, device):
     listener.start()
     longwav = sd.rec(int(seconds * fs), samplerate=fs, channels=channels, device=device)
     sd.wait()
-    # Save as WAV file
     sf.write('fullRecording.wav', longwav, fs)
     listener.stop()
     return keypresses
@@ -56,7 +55,6 @@ def record_audio(fs, seconds, channels, device):
 
 def create_audio_clips(keypresses, output_directory):
     print("Creating audio clips...")
-
     segment = AudioSegment.from_wav("fullRecording.wav")
     # Create path if not in system
     if not os.path.exists(output_directory):
@@ -92,16 +90,13 @@ def preprocess_audio(directory, desired_length):
 def cut_audio_files(output_directory):
     peak_times_list = []
     combined_loudness = []
-
     for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
             file_path = os.path.join(output_directory, filename)
             sample_rate, data = scipy.io.wavfile.read(file_path)
-
             # Mono Audio
             if len(data.shape) > 1:
                 data = np.mean(data, axis=1)
-
             # Peaks to use for cutting
             data = data / np.max(np.abs(data))
             peak_index, _ = find_peaks(data, height=0.8)
@@ -137,37 +132,27 @@ def similarity_cut(output_directory, reference_file):
     for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
             file_path = os.path.join(output_directory, filename)
-
-            # Load the .wav file
             sample_rate, data = scipy.io.wavfile.read(file_path)
-
             # Convert to mono if stereo
             if len(data.shape) > 1:
                 data = np.mean(data, axis=1)
-
             # # Normalise the data
             # data = data / np.max(np.abs(data))
-
             # Cross-correlation
             corr = correlate(ref_data, data)
             delay = len(data) - np.argmax(corr)
-
             # Cut the audio 0.2 seconds before and after
             start = int(max(0, delay - 0.02 * sample_rate))
             end = int(min(len(data), delay + 0.05 * sample_rate))
             cut_data = data[start:end]
-
-            # Copy the file to the new directory
             new_file_path = os.path.join(output_directory, filename)
             scipy.io.wavfile.write(new_file_path, sample_rate, cut_data)
 
 
 def size_cut(output_directory, desired_length):
-    # Iterate over the audio files in the directory
     print("Some files need some processing...")
     for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
-            # Load the audio file
             file_path = os.path.join(output_directory, filename)
             audio, sample_rate = librosa.load(file_path)
             # Check the length of the audio signal
@@ -187,25 +172,20 @@ def size_cut(output_directory, desired_length):
 
 
 def main():
-    # Ask the user needs to record data
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     record_data = input("Do you need to record any data (Y/N)?").upper() == 'Y'
-
     if not record_data:
         print("Record Section terminated")
         return
-    output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    output_directory = os.path.join(script_dir, 'data')
 
-    # Ask if user wants to create a repository of unseen data
     create_unseen_data = input("Do you want to create a repository of unseen data (Y/N)?").upper() == 'Y'
-
     if create_unseen_data:
         output_directory = input("Enter the output directory for unseen data:")
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-    # Ask if user wants to delete the files in the data folder
     delete_files = input("Do you want to delete the files in the data folder (Y/N)?").upper() == 'Y'
-
     if delete_files:
         delete_existing_files(output_directory)
 
@@ -216,18 +196,17 @@ def main():
     create_audio_clips(keypresses, output_directory)
     preprocess_audio(output_directory, desired_length=48000)
 
-    # Ask if the user wants to cut using peaks, similarity, or skip cutting step
     cut_method = input("Do you want to cut using Peaks (P), Similarity (S), or skip (N)?").upper()
-
     # Pipeline Cut
     if cut_method == 'P':
         cut_audio_files(output_directory)
     elif cut_method == 'S':
         use_default_reference = input("Do you want to use the default reference file (Y/N)? ").upper() == 'Y'
         if use_default_reference:
-            reference_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav'
+            reference_file = os.path.join(script_dir, 'referenceMechanical.wav')
         else:
             reference_file = input("Enter the path to the reference file: ")
+            reference_file = os.path.abspath(reference_file)
         similarity_cut(output_directory, reference_file)
     elif cut_method == 'N':
         print("Skipping cutting step")
@@ -264,6 +243,7 @@ def get_valid_duration():
                 print("Please enter a positive number.")
         except ValueError:
             print("Please enter a valid number.")
+
 
 if __name__ == "__main__":
     main()

@@ -7,18 +7,15 @@ import numpy as np
 from tensorflow.keras.utils import plot_model
 import pickle
 from app.model.modelML import data_test, labels_test
+import os
 
 
 def main():
-    # Ask the user to choose between TT or KFOLD
-    use_kfold = input("Do you want to analyse TT or K-Fold? (T/K): ").upper() == 'T'
-
-    if use_kfold:
-        model_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelTT.h5'
-        history_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history_train_test_split.pkl'
-    else:
-        model_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelKF.h5'
-        history_path = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/history_k_fold.pkl'
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_name = 'modelTT.h5' if input("Do you want to analyse TT or K-Fold? (T/K): ").upper() == 'T' else 'modelKF.h5'
+    model_path = os.path.join(script_dir, 'app', 'model', model_name)
+    history_name = 'history_train_test_split.pkl' if model_name == 'modelTT.h5' else 'history_k_fold.pkl'
+    history_path = os.path.join(script_dir, 'app', 'model', history_name)
 
     # Load the trained model
     model = load_model(model_path)

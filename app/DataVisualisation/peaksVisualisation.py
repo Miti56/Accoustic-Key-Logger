@@ -126,10 +126,7 @@ def similarity_cut(output_directory, reference_file):
     for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
             file_path = os.path.join(output_directory, filename)
-
-            # Load the .wav file
             sample_rate, data = scipy.io.wavfile.read(file_path)
-
             # Convert to mono if stereo
             if len(data.shape) > 1:
                 data = np.mean(data, axis=1)
@@ -145,8 +142,6 @@ def similarity_cut(output_directory, reference_file):
             start = int(max(0, delay - 0.02 * sample_rate))
             end = int(min(len(data), delay + 0.05 * sample_rate))
             cut_data = data[start:end]
-
-            # Copy the file to the new directory and save the cut audio
             new_file_path = os.path.join(output_directory, filename)
             scipy.io.wavfile.write(new_file_path, sample_rate, cut_data)
 
@@ -155,13 +150,10 @@ def size_cut(output_directory, desired_length):
     print("Some files need some processing...")
     for filename in os.listdir(output_directory):
         if filename.endswith(".wav"):
-            # Load the audio file
             file_path = os.path.join(output_directory, filename)
             audio, sample_rate = librosa.load(file_path)
-
             # Check the length of the audio signal
             current_length = len(audio)
-
             # Perform preprocessing if the length is different from the desired length
             if current_length != desired_length:
                 if current_length < desired_length:
@@ -171,9 +163,6 @@ def size_cut(output_directory, desired_length):
                 else:
                     # Truncate the audio signal
                     audio = audio[:desired_length]
-
-                # Save the preprocessed audio signal
-
                 sf.write(file_path, audio, sample_rate)
     print("Audio processed successfully")
 
@@ -182,31 +171,28 @@ def preprocess_audio(directory, desired_length):
         if filename.endswith(".wav"):
             file_path = os.path.join(directory, filename)
             audio, sample_rate = librosa.load(file_path)
-
             current_length = len(audio)
-
             if current_length != desired_length:
                 if current_length < desired_length:
                     pad_length = desired_length - current_length
                     audio = np.pad(audio, (0, pad_length), mode='constant')
                 else:
                     audio = audio[:desired_length]
-
                 sf.write(file_path, audio, sample_rate)
 
 
 
 def main():
-    output_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/test/dataLong'
-    # Paths to the pattern and target audio files
-    pattern_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav'
-    target_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/fullRecording.wav'
-    # 132
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_directory = os.path.join(script_dir, 'app', 'test', 'dataLong')
+    pattern_file = os.path.join(script_dir, 'app', 'record', 'referenceMechanical.wav')
+    target_file = os.path.join(script_dir, 'app', 'record', 'fullRecording.wav')
 
-    # Load the audio files
     sample_rate_pattern, pattern = load_audio(pattern_file)
     sample_rate_target, target = load_audio(target_file)
 
+    # Check if the sample rates match
+    assert sample_rate_pattern == sample_rate_target, "Sample rates do not match"
     # Check if the sample rates match
     assert sample_rate_pattern == sample_rate_target, "Sample rates do not match"
 
@@ -217,10 +203,8 @@ def main():
     # Find the peak indices and times
     peak_indices, peak_times = find_peak_indices(pattern, target, sample_rate_target)
 
-    # Prompt for plotting option
     option = input("Enter 'P' to only plot or any other key to plot and cut: ").upper()
     if option == 'P':
-        # Only perform plotting
         correlation = correlate(target, pattern, mode='valid')
         plot_correlation(correlation, peak_indices)
         return
@@ -228,28 +212,24 @@ def main():
         correlation = correlate(target, pattern, mode='valid')
         plot_correlation(correlation, peak_indices)
 
-    # Ask if the user wants to delete the files in the data folder
     delete_files = input("Do you want to delete the files in the data folder (Y/N)? ").upper() == 'Y'
-
     if delete_files:
         delete_existing_files(output_directory)
 
     # Create audio clips
     create_audio_clips(target_file, peak_indices, sample_rate_target, output_directory)
-
     preprocess_audio(output_directory, desired_length=48000)
 
-    # Ask if the user wants to cut using peaks, similarity, or skip cutting step
     cut_method = input("Do you want to cut using peaks (P), similarity (S), or skip cutting (N)? ").upper()
-
     if cut_method == 'P':
         cut_audio_files(output_directory)
     elif cut_method == 'S':
         use_default_reference = input("Do you want to use the default reference file (Y/N)? ").upper() == 'Y'
         if use_default_reference:
-            reference_file = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/referenceMechanical.wav'
+            reference_file = os.path.join(script_dir, 'app', 'record', 'referenceMechanical.wav')
         else:
             reference_file = input("Enter the path to the reference file: ")
+            reference_file = os.path.abspath(reference_file)  # Convert to absolute path
         similarity_cut(output_directory, reference_file)
     elif cut_method == 'N':
         print("Skipping cutting step.")
@@ -287,6 +267,7 @@ def get_valid_duration():
                 print("Please enter a positive number.")
         except ValueError:
             print("Please enter a valid number.")
+
 
 if __name__ == "__main__":
     main()

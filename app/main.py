@@ -262,7 +262,6 @@ def main():
             break
 
         else:
-            # Invalid input
             print("Invalid input. Please select a valid option.")
     print("The program has finished running, if you wish, you can replace your keystroke sounds by fake ones ("
           "Press H to learn more)")

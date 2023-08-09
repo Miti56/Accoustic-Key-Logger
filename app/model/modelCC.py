@@ -36,7 +36,11 @@ def accuracy(data, labels):
     print(f"Accuracy on entire data: {accuracy}")
 
 def main():
+
     default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    default_directory = os.path.join(parent_dir, 'record', 'data')
     use_default = input("Do you want to use the default directory? (Y/N): ").upper() == 'Y'
     if use_default:
         directory = default_directory
@@ -56,18 +60,13 @@ def main():
     # Convert to numpy arrays
     data = np.array(data)
     labels = np.array(labels)
-
     # Encode labels
     le = LabelEncoder()
     labels = le.fit_transform(labels)
-
     # Save the cross-correlation model and labels
     with open('cross_correlation_model.pkl', 'wb') as f:
         pickle.dump({'dataCC': data, 'labelsCC': labels, 'label_encoderCC': le}, f)
-
     accuracy(data,labels)
-
-    # Keep predicting WAV files until the user types "quit"
     while True:
         file_path = input("Enter the path of the .wav file to predict (type 'quit' to exit): ")
         if file_path.lower() == 'quit':

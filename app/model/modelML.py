@@ -131,8 +131,6 @@ def compile_and_train_k_fold(model, data, labels, k=5, epochs=200, batch_size=32
 
     mean_accuracy = np.mean(accuracies)
     print(f"Mean validation accuracy with {k}-fold cross-validation: {mean_accuracy:.4f}")
-
-    # Save the history for each fold
     save_history(history, 'history_k_fold.pkl')
 
     return model
@@ -223,7 +221,9 @@ def get_num_files_input():
 
 
 def main():
-    directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    directory = os.path.join(parent_dir, 'record', 'data')
     data, labels, le = load_and_process_data(directory)
     input_shape = (data.shape[1],)
     num_classes = len(np.unique(labels))
@@ -266,7 +266,9 @@ def main():
         # model.save('model.h5')
 
     # Testing
-    default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/unseenData'
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)
+    default_directory = os.path.join(parent_dir, 'record', 'unseenData')
     print("To use this option you will need to have previously created unseen data")
     use_default = input("Do you want to use the default directory for testing? (Y/N): ").upper() == 'Y'
 
@@ -306,7 +308,9 @@ def main():
         # plt.show()
 
 # Needed outside
-directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/allClips/clipsMechanicalCutResized'
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(script_dir)
+directory = os.path.join(parent_dir, 'record', 'data')
 data, labels, le = load_and_process_data(directory)
 input_shape = (data.shape[1],)
 num_classes = len(np.unique(labels))
