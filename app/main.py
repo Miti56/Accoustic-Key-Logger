@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 import time
@@ -19,72 +20,87 @@ def display_prompt(prompt):
 
 def run_record():
     try:
-        subprocess.run(['python3', 'record/record.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        record_script_path = os.path.join(script_dir, 'record', 'record.py')
+        subprocess.run(['python3', record_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
+        print("Error running the program.")
 
 
 def run_data():
     try:
-        subprocess.run(['python3', 'DataVisualisation/dataVisualisation.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        record_script_path = os.path.join(script_dir, 'DataVisualisation', 'dataVisualisation.py')
+        subprocess.run(['python3', record_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
+        print("Error running the program.")
 
 
 def run_modelCC():
     try:
-        subprocess.run(['python3', 'model/modelCC.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        modelCC_script_path = os.path.join(script_dir, 'model', 'modelCC.py')
+        subprocess.run(['python3', modelCC_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
+        print("Error running the program.")
 
+# Similarly, update other run functions using the same approach
 
 def run_modelML():
     try:
-        subprocess.run(['python3', 'model/modelML.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        modelML_script_path = os.path.join(script_dir, 'model', 'modelML.py')
+        subprocess.run(['python3', modelML_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_modelVisualisation():
     try:
-        subprocess.run(['python3', 'DataVisualisation/modelVisualisation.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        modelVisualisation_script_path = os.path.join(script_dir, 'DataVisualisation', 'modelVisualisation.py')
+        subprocess.run(['python3', modelVisualisation_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_testLiveModel():
     try:
-        subprocess.run(['python3', 'test/liveModel.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        testLiveModel_script_path = os.path.join(script_dir, 'test', 'liveModel.py')
+        subprocess.run(['python3', testLiveModel_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_testModelCC():
     try:
-        subprocess.run(['python3', 'test/modelCCTest.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        testModelCC_script_path = os.path.join(script_dir, 'test', 'modelCCTest.py')
+        subprocess.run(['python3', testModelCC_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_testModelML():
     try:
-        subprocess.run(['python3', 'test/modelMLTest.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        testModelML_script_path = os.path.join(script_dir, 'test', 'modelMLTest.py')
+        subprocess.run(['python3', testModelML_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_testLong():
     try:
-        subprocess.run(['python3', 'test/testLong.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        testLong_script_path = os.path.join(script_dir, 'test', 'testLong.py')
+        subprocess.run(['python3', testLong_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
-
+        print("Error running the program.")
 
 def run_fakeKeys():
     try:
-        subprocess.run(['python3', 'utils/keyboardSoundEmulation.py'], check=True)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        fakeKeys_script_path = os.path.join(script_dir, 'utils', 'keyboardSoundEmulation.py')
+        subprocess.run(['python3', fakeKeys_script_path], check=True)
     except subprocess.CalledProcessError:
-        print("Error running the original program.")
+        print("Error running the program.")
 
 
 def display_additional_information():
@@ -149,11 +165,9 @@ def main():
     print("Welcome!")
 
     q1 = display_prompt("Are you in a quiet space to start the recording? ").upper() == 'Y'
-
     if q1:
         print(f"{Color.GREEN}====================")
-        # Run the original program
-        run_data()
+        run_record()
     else:
         q2 = display_prompt("Do you wish to continue with already existent data? ").upper() == 'Y'
         if q2:
@@ -169,7 +183,6 @@ def main():
 
     if q3:
         print(f"{Color.GREEN}====================")
-        # Run the original program
         run_data()
         print("Data analysis performed.")
         q4 = display_prompt("Are the results satisfactory? ").upper() == 'Y'
@@ -178,7 +191,6 @@ def main():
         else:
             print("Program terminated. Try again in a quieter environment")
             sys.exit()
-
     else:
         print(f"{Color.YELLOW}====================")
         print("Redirecting to the model creation...")
@@ -187,7 +199,6 @@ def main():
     while True:
         q5 = display_prompt("Two models are currently available: Cross-Correlation (CC) or Neural Network (NN "
                             "(Press H for additional information)").upper()
-
         if q5 == 'CC':
             print(f"{Color.GREEN}====================")
             # Perform Cross-Correlation
@@ -200,19 +211,15 @@ def main():
             break
         elif q5 == 'H':
             print(f"{Color.HEADER}====================")
-            # Display additional information
             display_additional_information()
         else:
-            # Invalid input
             print("Invalid input. Please select a valid option.")
-
     print(f"{Color.GREEN}====================")
     print("Model has been trained!")
     print("Redirecting to the model visualisation...")
     time.sleep(3)
 
     q6 = display_prompt("Visualise Model? ").upper() == 'Y'
-
     if q6:
         print(f"{Color.GREEN}====================")
         # Run the original program
@@ -224,7 +231,6 @@ def main():
         else:
             print("Program terminated. Try again in a quieter environment")
             sys.exit()
-
     else:
         print(f"{Color.YELLOW}====================")
         print("Redirecting to the testing suite...")
@@ -236,7 +242,6 @@ def main():
         print("Press H for a description of the different tests.")
         print("Press Q to end the tests")
         q7 = display_prompt("Test using: Live Model (LM), ML Model (ML), CC Model (CC) or Wav File Test (WT)?").upper()
-
         if q7 == 'LM':
             print(f"{Color.GREEN}====================")
             run_testLiveModel()
@@ -259,18 +264,14 @@ def main():
         else:
             # Invalid input
             print("Invalid input. Please select a valid option.")
-
     print("The program has finished running, if you wish, you can replace your keystroke sounds by fake ones ("
           "Press H to learn more)")
 
     q8 = display_prompt("Run the Keyboard replacer sound").upper() == 'Y'
-
     if q8:
         print(f"{Color.GREEN}====================")
-        # Run the original program
         run_fakeKeys()
         print("Model analysis performed.")
-
     else:
         print(f"{Color.YELLOW}====================")
         print("Ending the program...")
