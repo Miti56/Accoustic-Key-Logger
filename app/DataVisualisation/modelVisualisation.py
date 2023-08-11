@@ -26,7 +26,7 @@ def main():
     # Model Summary
     model.summary()
 
-    # Loss and Accuracy during Training
+    # Loss and Accuracy
     plt.figure(figsize=(14, 4))
     plt.subplot(1, 2, 1)
     plt.plot(history['loss'], label='Training Loss')
@@ -68,7 +68,7 @@ def main():
         fpr[i], tpr[i], _ = roc_curve(labels_test_bin[:, i], predictions_bin[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-    # Plot ROC curve for a specific class
+    # ROC curve
     plt.figure()
     lw = 2
     plt.plot(fpr[1], tpr[1], color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % roc_auc[1])
@@ -87,20 +87,16 @@ def main():
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
-
-    # Model Weights Visualization
     weights = model.layers[1].get_weights()[0]
     plt.figure(figsize=(10, 5))
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
-
     weights = model.layers[2].get_weights()[0]
     plt.figure(figsize=(10, 5))
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
-
     weights = model.layers[3].get_weights()[0]
     plt.figure(figsize=(10, 5))
     sns.heatmap(weights, cmap='viridis')
