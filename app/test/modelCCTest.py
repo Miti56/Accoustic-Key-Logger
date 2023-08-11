@@ -12,29 +12,20 @@ def load_audio(file_path):
 def predict_label(test_data, data, labels):
     # Calculate the cross correlation between the test sample and all samples
     cross_correlations = [correlate(test_data, d) for d in data]
-
     # Get the indices that sort the cross correlations by their maximum values
     sorted_indices = np.argsort([np.max(c) for c in cross_correlations])
-
-    # Predict the label of the test sample to be the same as the label of the sample with the highest cross correlation
+    # Predict the label of the test sample = highest cross correlation
     predicted_label = labels[sorted_indices[-1]]
 
     return predicted_label
 
 def predict_wav_file(filename, data, labels, le):
-    # Load the .wav file
     audio, sample_rate = load_audio(filename)
-
-    # Predict the label
     predicted_label = predict_label(audio, data, labels)
-
     print(f"The predicted key press for {filename} is {le.inverse_transform([predicted_label])[0]}.")
 
 def main():
-    # # Default path
     # default_directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-    #
-    # # Prompt the user for input
     # use_default = input("Do you want to use the default directory? (Y/N): ").upper() == 'Y'
     #
     # if use_default:
@@ -71,8 +62,6 @@ def main():
     data_pretrained = model_data['dataCC']
     labels_pretrained = model_data['labelsCC']
     label_encoder_pretrained = model_data['label_encoderCC']
-
-    # Keep predicting WAV files until the user types "quit"
     while True:
         file_path = input("Enter the path of the .wav file to predict (type 'quit' to exit): ")
         if file_path.lower() == 'quit':

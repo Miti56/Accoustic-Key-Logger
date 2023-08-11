@@ -49,7 +49,6 @@ def get_file_input():
 
 
 def main():
-    # Directory containing the audio files
     directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/test/dataLong'
     model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/modelKF.h5')
     le = LabelEncoder()

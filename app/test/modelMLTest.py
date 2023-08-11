@@ -59,11 +59,8 @@ def get_directory_input():
 
 
 def main():
-    # Directory containing the audio files
     directory = '/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data'
-
     data, labels, le = load_and_process_data(directory)
-
     # Load the trained model
     model = load_model('/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/model/model.h5')
 
