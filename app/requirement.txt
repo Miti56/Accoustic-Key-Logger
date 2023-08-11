@@ -1,0 +1,37 @@
+Python 3.11
+Tested on Windows and macOS
+
+List of required dependencies to run the program:
+
+from tensorflow.keras.models import load_model
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
+from sklearn.preprocessing import LabelBinarizer
+import seaborn as sns
+from tensorflow.keras.utils import plot_model
+from app.model.modelML import data_test, labels_test
+import subprocess
+import sys
+import sounddevice as sd
+from pynput import keyboard
+import time
+from keras.src.layers import Conv1D, MaxPooling1D
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.preprocessing import LabelEncoder
+import pickle
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Reshape
+import random
+import soundfile as sf
+from pydub import AudioSegment
+from scipy.signal import correlate
+import numpy as np
+import librosa
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.manifold import TSNE
+from sklearn.metrics import silhouette_score
+from scipy.signal import find_peaks
+import scipy.io.wavfile
+import os
