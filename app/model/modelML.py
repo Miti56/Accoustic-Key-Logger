@@ -26,14 +26,10 @@ def load_and_process_data(directory):
             # # Compute other features
             # chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
             # chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
-            #
             # spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
             # spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
-            #
             # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
             # tonnetz_processed = np.mean(tonnetz.T, axis=0)
-
-            # # Concatenate the features together
             # combined_features = np.concatenate(
             #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed])
             label = filename.split('_')[0]
@@ -44,7 +40,7 @@ def load_and_process_data(directory):
     labels = np.array(labels)
     le = LabelEncoder()
     labels = le.fit_transform(labels)
-    # Save the label encoder and its classes
+    # Save the label encoder and classes
     np.save('label_encoder.npy', le.classes_)
     return data, labels, le
 
@@ -86,7 +82,7 @@ def compile_and_train(model, train_data, train_labels, test_data, test_labels, e
     # Compile the model
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-    # Define early stopping callback
+    # Early stopping callback
     early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 
     # Train the model and get the training history
@@ -98,7 +94,7 @@ def compile_and_train(model, train_data, train_labels, test_data, test_labels, e
 
 
 def compile_and_train_k_fold(model, data, labels, k=5, epochs=200, batch_size=32):
-    # Initialize lists to store training and validation metrics for each fold
+    # Initialize lists for each fold
     train_losses = []
     train_accuracies = []
     val_losses = []
@@ -156,13 +152,10 @@ def predict_key_press(filename, model, le):
     # # Compute other features
     # chroma_stft = librosa.feature.chroma_stft(y=audio, sr=sample_rate)
     # chroma_stft_processed = np.mean(chroma_stft.T, axis=0)
-    #
     # spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sample_rate, n_fft=1600)
     # spectral_contrast_processed = np.mean(spectral_contrast.T, axis=0)
-    #
     # tonnetz = librosa.feature.tonnetz(y=audio, sr=sample_rate)
     # tonnetz_processed = np.mean(tonnetz.T, axis=0)
-    #
     # combined_features = np.concatenate(
     #     [mfccs_processed, chroma_stft_processed, spectral_contrast_processed, tonnetz_processed], axis=1)
     # # Reshape the data for prediction
