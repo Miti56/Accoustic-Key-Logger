@@ -6,11 +6,8 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.preprocessing import LabelEncoder
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping
-import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Reshape
-
-import time
 
 
 def load_and_process_data(directory):
@@ -110,7 +107,7 @@ def compile_and_train_k_fold(model, data, labels, k=5, epochs=200, batch_size=32
         train_data, test_data = data[train_index], data[test_index]
         train_labels, test_labels = labels[train_index], labels[test_index]
 
-        # Define early stopping callback
+        # Early stopping callback
         early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 
         # Train the model and get the training history
@@ -118,7 +115,7 @@ def compile_and_train_k_fold(model, data, labels, k=5, epochs=200, batch_size=32
                             validation_data=(test_data, test_labels), verbose=0,
                             callbacks=[early_stopping])
 
-        # Accumulate training and validation metrics for each fold
+        # Save training and validation metrics for each fold
         train_losses.append(history.history['loss'])
         train_accuracies.append(history.history['accuracy'])
         val_losses.append(history.history['val_loss'])
@@ -278,7 +275,7 @@ def main():
     # Iterate over the files
     for filename in test_files[:num_files]:
         if filename.endswith(".wav"):
-            # Get the full path of the test file
+            # Get full path of the test file
             file_path = os.path.join(test_directory, filename)
 
             # Predict the key

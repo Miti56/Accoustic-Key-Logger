@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import librosa
 import matplotlib.pyplot as plt
@@ -21,7 +20,6 @@ def load_and_process_data(directory):
             mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40, n_fft=1600)
             mfccs_processed = np.mean(mfccs.T, axis=0)
             label = filename.split('_')[0]
-
             data.append(mfccs_processed)
             filenames.append(filename)
             labels.append(label)

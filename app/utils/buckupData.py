@@ -4,18 +4,14 @@ import shutil
 
 def copy_folder(source, destination):
     try:
-        # Check if the source folder exists
         if not os.path.exists(source):
             print("Source folder does not exist.")
             return
-
         # Remove the destination folder if it already exists
         if os.path.exists(destination):
             shutil.rmtree(destination)
-
         # Copy the folder and its contents recursively
         shutil.copytree(source, destination)
-
         print("Folder and contents copied successfully.")
     except Exception as e:
         print("An error occurred while copying the folder:", str(e))
@@ -35,7 +31,6 @@ def get_folder_path_input(prompt, default=None):
 
 
 def main():
-    # Prompt the user for the source folder path or use a default path
     default_source = "/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/record/data"
     use_default_source = input("Use default source folder? (Y/N): ").upper() == "Y"
     if use_default_source:
@@ -43,7 +38,6 @@ def main():
     else:
         source_folder = get_folder_path_input("Enter the source folder path: ")
 
-    # Prompt the user for the destination folder path or use a default path
     default_destination = "/Users/miti/Documents/GitHub/Accoustic-Key-Logger/app/utils/buckupData"
     use_default_destination = input("Use default destination folder? (Y/N): ").upper() == "Y"
     if use_default_destination:
@@ -51,7 +45,6 @@ def main():
     else:
         destination_folder = get_folder_path_input("Enter the destination folder path: ")
 
-    # Copy the folder and its contents
     copy_folder(source_folder, destination_folder)
 
 

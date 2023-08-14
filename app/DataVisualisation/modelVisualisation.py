@@ -33,13 +33,11 @@ def main():
     plt.plot(history['val_loss'], label='Validation Loss')
     plt.legend()
     plt.title('Losses')
-
     plt.subplot(1, 2, 2)
     plt.plot(history['accuracy'], label='Training Accuracy')
     plt.plot(history['val_accuracy'], label='Validation Accuracy')
     plt.legend()
     plt.title('Accuracies')
-
     plt.show()
 
     # Confusion Matrix
@@ -102,7 +100,6 @@ def main():
     sns.heatmap(weights, cmap='viridis')
     plt.title('Weights of the First Layer')
     plt.show()
-
 
     # Model Architecture Diagram
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
