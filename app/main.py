@@ -44,8 +44,6 @@ def run_modelCC():
     except subprocess.CalledProcessError:
         print("Error running the program.")
 
-# Similarly, update other run functions using the same approach
-
 def run_modelML():
     try:
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -222,7 +220,6 @@ def main():
     q6 = display_prompt("Visualise Model? ").upper() == 'Y'
     if q6:
         print(f"{Color.GREEN}====================")
-        # Run the original program
         run_modelVisualisation()
         print("Model analysis performed.")
         q4 = display_prompt("Are the results satisfactory? ").upper() == 'Y'
